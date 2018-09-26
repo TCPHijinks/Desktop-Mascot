@@ -17,6 +17,7 @@ namespace Desktop_Mascot
 	{
 
 		private bool falling = true;
+		private int velocityX = 0, velocityY = 0;		
 
 		public Form()
 		{
@@ -26,7 +27,7 @@ namespace Desktop_Mascot
 			BackColor = Color.LightGray;
 			TransparencyKey = Color.LightGray;
 			
-			//	UnSemi((Bitmap)this.pictureBox1.Image); // Remove semi-transparent pixels. 
+			UnSemi((Bitmap)this.Mascot.Image); // Remove semi-transparent pixels. 
 
 			// Make picture box draggable. 
 			ControlExtension.Draggable(Mascot, true);
@@ -55,11 +56,11 @@ namespace Desktop_Mascot
 			}
 			else if (falling)
 			{				
-				Mascot.Location = new Point(Mascot.Location.X, Mascot.Location.Y + 8);
+				Mascot.Location = new Point(Mascot.Location.X + velocityX, Mascot.Location.Y + velocityY);
 				UpdateFrame("fall");
 			}
 		}
-
+		
 		/// <summary>
 		/// Update mascot image frame.
 		/// </summary>
@@ -79,15 +80,23 @@ namespace Desktop_Mascot
 			string imgFrame = node.Attributes["image"].Value;
 			string imgPath = Path.Combine(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory), @"Data\img\Mascot" + imgFrame);
 
-			// Update mascot frame.
-			Mascot.Image = new Bitmap(imgPath);
+			string velocityStr = node.Attributes["velocity"].Value;
+
+			// Update action velocity.
+			Int32.TryParse(velocityStr.Substring(0, velocityStr.IndexOf(",")), out velocityX);
+			Int32.TryParse(velocityStr.Substring(velocityStr.IndexOf(",") + 1), out velocityY);
+
+			// Update mascot frame & remove semi-transparent pixels.
+			Mascot.Image = UnSemi(new Bitmap(imgPath));
 		}
 
 
-
-		#region Image transparency.
-		// Remove semi-transparent pixels.
-		public static void UnSemi(Bitmap bmp)
+		/// <summary>
+		/// Remove semi-transparent pixels.
+		/// </summary>
+		/// <param name="bmp"></param>
+		/// <returns>Edited bitmap image.</returns>
+		public Bitmap UnSemi(Bitmap bmp)
 		{
 			Size s = bmp.Size;
 			PixelFormat fmt = bmp.PixelFormat;
@@ -107,7 +116,8 @@ namespace Desktop_Mascot
 			}
 			System.Runtime.InteropServices.Marshal.Copy(data, 0, bmpData.Scan0, data.Length);
 			bmp.UnlockBits(bmpData);
-		}
-		#endregion
+
+			return bmp;
+		}		
 	}
 }

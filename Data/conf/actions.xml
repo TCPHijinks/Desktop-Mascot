@@ -10,7 +10,7 @@
         <!-- Fall -->
         <Action type="fall" description="falling" collider="ground">
             <Animation>
-                <Frame duration="100" velocity="0,0" image="/mascot2.png"/>
+                <Frame duration="100" velocity="0,7" image="/mascot2.png"/>
             </Animation>
         </Action>
 
