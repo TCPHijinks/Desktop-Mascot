@@ -17,10 +17,15 @@ namespace Desktop_Mascot
 	{
 
 		private bool falling = true;
-		private int velocityX = 0, velocityY = 0;		
+		private int mascotVelocityX = 0, mascotVelocityY = 0;
+		int timePeriod = 0;
+		int cursorSpeedX = 0,
+			cursorSpeedY = 0;
+		int cursorPosX = 0,
+			cursorPosY = 0;
 
 		public Form()
-		{
+		{			
 			InitializeComponent();
 
 			// Set BG color and set it transparent (bugged).
@@ -36,28 +41,133 @@ namespace Desktop_Mascot
 			TopMost = true;
 		}
 
+		int extraVelocityX = 0, extraVelocityY = 0;
+		bool mascotThrownRight = false;
 		private void Mascot_MouseDown(object sender, MouseEventArgs e)
-		{
+		{			
 			falling = false;
 		}
-
 		private void Mascot_MouseUp(object sender, MouseEventArgs e)
 		{
 			falling = true;
+			extraVelocityX = cursorSpeedX;
+			extraVelocityY = cursorSpeedY;
+
+			if(extraVelocityX > 0)
+			{
+				mascotThrownRight = true;
+			}
+			else
+			{
+				mascotThrownRight = false;
+			}
 		}
 
+
+	
+		
 		private void Timer_Tick(object sender, EventArgs e)
 		{
-			// Prevent mascot from falling out of bounds.
+			// Calculate distance and then speed.
+			int differenceX = (cursorPosX - Cursor.Position.X);
+			int differenceY = (cursorPosY - Cursor.Position.Y);
+			cursorSpeedX = (int)(((differenceX)) / 17) * -1;
+			cursorSpeedY = (int)(((differenceY)) / 16) * -1;
+						
+			timePeriod++;
+			if (timePeriod >= 10)
+			{
+				// Update cursor position every X milliseconds.
+				cursorPosX = Cursor.Position.X;
+				cursorPosY = Cursor.Position.Y;
+
+				// Limit velocity of X axis.
+				if(extraVelocityX > 50)
+				{
+					extraVelocityX = 50;
+				}
+				else if(extraVelocityX < -50)
+				{
+					extraVelocityX = -50;
+				}
+
+				// Apply gravity to Y axis.
+				if(extraVelocityY < 0)
+				{
+					extraVelocityY += 3;
+				}
+
+				// Decelerate X axis velocity.
+				if(mascotThrownRight)
+				{
+					if(extraVelocityX > 0)
+					{
+						extraVelocityX -= 1;
+					}
+					if(extraVelocityX < 0)
+					{
+						extraVelocityX = 0;
+					}
+				}
+				else
+				{
+					if (extraVelocityX < 0)
+					{
+						extraVelocityX += 1;
+					}
+					if (extraVelocityX > 0)
+					{
+						extraVelocityX = 0;
+					}
+				}
+			
+
+				// Limit velocity of Y axis.
+				if (extraVelocityY > 15)
+				{
+					extraVelocityY = 15;
+				}
+				else if(extraVelocityY < -15)
+				{
+					extraVelocityY = -15;
+				}
+
+				timePeriod = 0;
+			}
+			
+
+			// Falling movement and animation.
 			if (Mascot.Location.Y + Mascot.Size.Height >= Height)
 			{
+				// Stop falling when on floor.
 				falling = false;
 				UpdateFrame("idle");
 			}
 			else if (falling)
-			{				
-				Mascot.Location = new Point(Mascot.Location.X + velocityX, Mascot.Location.Y + velocityY);
+			{
+				// Fall if not touching floor.				
+				Mascot.Location = new Point(Mascot.Location.X + (mascotVelocityX + extraVelocityX), 
+					Mascot.Location.Y + (mascotVelocityY + extraVelocityY));
 				UpdateFrame("fall");
+			}
+
+			
+			if (Mascot.Location.X + Mascot.Size.Width >= Width)
+			{
+				mascotVelocityX = 0;
+				extraVelocityX = 0;
+				
+			}
+			else if(Mascot.Location.X <= 0)
+			{
+				mascotVelocityX = 0;
+				extraVelocityX = 0;
+			
+			}
+
+			if(Mascot.Location.Y <= 0)
+			{
+				extraVelocityY = 0;
 			}
 		}
 		
@@ -83,8 +193,8 @@ namespace Desktop_Mascot
 			string velocityStr = node.Attributes["velocity"].Value;
 
 			// Update action velocity.
-			Int32.TryParse(velocityStr.Substring(0, velocityStr.IndexOf(",")), out velocityX);
-			Int32.TryParse(velocityStr.Substring(velocityStr.IndexOf(",") + 1), out velocityY);
+			Int32.TryParse(velocityStr.Substring(0, velocityStr.IndexOf(",")), out mascotVelocityX);
+			Int32.TryParse(velocityStr.Substring(velocityStr.IndexOf(",") + 1), out mascotVelocityY);
 
 			// Update mascot frame & remove semi-transparent pixels.
 			Mascot.Image = UnSemi(new Bitmap(imgPath));
