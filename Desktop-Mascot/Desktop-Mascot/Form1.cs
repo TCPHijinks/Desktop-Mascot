@@ -15,123 +15,117 @@ namespace Desktop_Mascot
 {
 	public partial class Form : System.Windows.Forms.Form
 	{
+		private bool falling = true; // Try remove
+		
+		// Mascot movement force.
+		private int moveForceX = 0;
+		private int moveForceY = 0;
 
-		private bool falling = true;
-		private int mascotVelocityX = 0, mascotVelocityY = 0;
-		int timePeriod = 0;
-		int cursorSpeedX = 0,
-			cursorSpeedY = 0;
-		int cursorPosX = 0,
-			cursorPosY = 0;
+		// Mascot velocity.
+		private int velocityX = 0;
+		private int velocityY = 0;
+
+		// Amount initial velocity is affected by.
+		int decelerationX = 0;
+		int decelerationY = 0;
+
+		// Rate at which velocity is decreased.
+		int decelerationRateX = 0;
+		int decelerationRateY = 0;
+
+		// Maximum mascot velocity.
+		int maxVelocityX = 0;
+		int maxVelocityY = 0;
+
+		private int gravity = 0;
+
+		// Position of mouse cursor.
+		private int cursorPosX = 0;
+		private int	cursorPosY = 0;
+		
+		
 
 		public Form()
 		{			
 			InitializeComponent();
 
-			// Set BG color and set it transparent (bugged).
+			// Set window transparent.
 			BackColor = Color.LightGray;
 			TransparencyKey = Color.LightGray;
 			
-			UnSemi((Bitmap)this.Mascot.Image); // Remove semi-transparent pixels. 
-
-			// Make picture box draggable. 
+			// Make mascot draggable. 
 			ControlExtension.Draggable(Mascot, true);
 
 			// Set window to top layer.
 			TopMost = true;
+
+			GetXmlSettings();
 		}
 
-		int extraVelocityX = 0, extraVelocityY = 0;
-		bool mascotThrownRight = false;
+		
 		private void Mascot_MouseDown(object sender, MouseEventArgs e)
 		{			
 			falling = false;
 		}
+
+		
 		private void Mascot_MouseUp(object sender, MouseEventArgs e)
 		{
 			falling = true;
-			extraVelocityX = cursorSpeedX;
-			extraVelocityY = cursorSpeedY;
-
-			if(extraVelocityX > 0)
-			{
-				mascotThrownRight = true;
-			}
-			else
-			{
-				mascotThrownRight = false;
-			}
+			
+			// Velocity of thrown mascot.
+			velocityX = ((cursorPosX - Cursor.Position.X) / decelerationX) * -1;
+			velocityY = ((cursorPosY - Cursor.Position.Y) / decelerationY) * -1;			
 		}
-
-
-	
 		
+
+		int timePeriod = 0;
 		private void Timer_Tick(object sender, EventArgs e)
-		{
-			// Calculate distance and then speed.
-			int differenceX = (cursorPosX - Cursor.Position.X);
-			int differenceY = (cursorPosY - Cursor.Position.Y);
-			cursorSpeedX = (int)(((differenceX)) / 17) * -1;
-			cursorSpeedY = (int)(((differenceY)) / 16) * -1;
-						
+		{			
 			timePeriod++;
-			if (timePeriod >= 10)
+			if (timePeriod >= 9)
 			{
 				// Update cursor position every X milliseconds.
 				cursorPosX = Cursor.Position.X;
 				cursorPosY = Cursor.Position.Y;
 
 				// Limit velocity of X axis.
-				if(extraVelocityX > 50)
+				if(velocityX > maxVelocityX)
 				{
-					extraVelocityX = 50;
+					velocityX = maxVelocityX;
 				}
-				else if(extraVelocityX < -50)
+				else if(velocityX < -maxVelocityX)
 				{
-					extraVelocityX = -50;
+					velocityX = -maxVelocityX;
+				}
+
+				// Limit velocity of Y axis.
+				if (velocityY > maxVelocityY)
+				{
+					velocityY = maxVelocityY;
+				}
+				else if (velocityY < -maxVelocityY)
+				{
+					velocityY = -maxVelocityY;
 				}
 
 				// Apply gravity to Y axis.
-				if(extraVelocityY < 0)
+				if (velocityY < 0)
 				{
-					extraVelocityY += 3;
+					velocityY += decelerationRateY;
 				}
 
-				// Decelerate X axis velocity.
-				if(mascotThrownRight)
+				// Decelerate x axis.
+				if (velocityX > 0)
 				{
-					if(extraVelocityX > 0)
-					{
-						extraVelocityX -= 1;
-					}
-					if(extraVelocityX < 0)
-					{
-						extraVelocityX = 0;
-					}
+					velocityX -= decelerationRateX;
 				}
-				else
+				else if (velocityX < 0)
 				{
-					if (extraVelocityX < 0)
-					{
-						extraVelocityX += 1;
-					}
-					if (extraVelocityX > 0)
-					{
-						extraVelocityX = 0;
-					}
+					velocityX += decelerationRateX;
 				}
-			
-
-				// Limit velocity of Y axis.
-				if (extraVelocityY > 15)
-				{
-					extraVelocityY = 15;
-				}
-				else if(extraVelocityY < -15)
-				{
-					extraVelocityY = -15;
-				}
-
+				
+				// Reset update timer.
 				timePeriod = 0;
 			}
 			
@@ -146,30 +140,30 @@ namespace Desktop_Mascot
 			else if (falling)
 			{
 				// Fall if not touching floor.				
-				Mascot.Location = new Point(Mascot.Location.X + (mascotVelocityX + extraVelocityX), 
-					Mascot.Location.Y + (mascotVelocityY + extraVelocityY));
+				Mascot.Location = new Point(Mascot.Location.X + (moveForceX + velocityX), 
+					Mascot.Location.Y + (moveForceY + velocityY + gravity));
 				UpdateFrame("fall");
 			}
 
-			
+			// Prevent mascot leaving screen window.
 			if (Mascot.Location.X + Mascot.Size.Width >= Width)
 			{
-				mascotVelocityX = 0;
-				extraVelocityX = 0;
+				moveForceX = 0;
+				velocityX = 0;
 				
 			}
 			else if(Mascot.Location.X <= 0)
 			{
-				mascotVelocityX = 0;
-				extraVelocityX = 0;
+				moveForceX = 0;
+				velocityX = 0;
 			
 			}
-
 			if(Mascot.Location.Y <= 0)
 			{
-				extraVelocityY = 0;
+				velocityY = 0;
 			}
 		}
+
 		
 		/// <summary>
 		/// Update mascot image frame.
@@ -193,11 +187,36 @@ namespace Desktop_Mascot
 			string velocityStr = node.Attributes["velocity"].Value;
 
 			// Update action velocity.
-			Int32.TryParse(velocityStr.Substring(0, velocityStr.IndexOf(",")), out mascotVelocityX);
-			Int32.TryParse(velocityStr.Substring(velocityStr.IndexOf(",") + 1), out mascotVelocityY);
+			Int32.TryParse(velocityStr.Substring(0, velocityStr.IndexOf(",")), out moveForceX);
+			Int32.TryParse(velocityStr.Substring(velocityStr.IndexOf(",") + 1), out moveForceY);
 
 			// Update mascot frame & remove semi-transparent pixels.
 			Mascot.Image = UnSemi(new Bitmap(imgPath));
+		}
+
+		private void GetXmlSettings()
+		{
+			string xmlPath = AppDomain.CurrentDomain.BaseDirectory + "Data\\conf\\actions.xml";
+
+			// Open actions xml file.
+			XmlDocument doc = new XmlDocument();
+			doc.Load(xmlPath);
+
+			// Get gravity from physics node.
+			XmlNode node = doc.DocumentElement.SelectSingleNode("/Mascot/Environment/Physics");
+			gravity = Int32.Parse(node.Attributes["gravity"].Value);
+
+			// Get x axis physics values.			
+			node = doc.DocumentElement.SelectSingleNode("/Mascot/Environment/Physics/xAxis");
+			decelerationX = Int32.Parse(node.Attributes["deceleration"].Value);
+			decelerationRateX = Int32.Parse(node.Attributes["rateOfDeceleration"].Value);
+			maxVelocityX = Int32.Parse(node.Attributes["maxVelocity"].Value);
+
+			
+			node = doc.DocumentElement.SelectSingleNode("/Mascot/Environment/Physics/yAxis");
+			decelerationY = Int32.Parse(node.Attributes["deceleration"].Value);
+			decelerationRateY = Int32.Parse(node.Attributes["rateOfDeceleration"].Value);
+			maxVelocityY = Int32.Parse(node.Attributes["maxVelocity"].Value);
 		}
 
 
