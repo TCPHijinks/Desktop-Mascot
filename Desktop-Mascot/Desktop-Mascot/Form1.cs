@@ -50,15 +50,17 @@ namespace Desktop_Mascot
 			InitializeComponent();
 
 			// Set window transparent.
-			BackColor = Color.LightGray;
-			TransparencyKey = Color.LightGray;
-			
+			BackColor = Color.LimeGreen;
+			TransparencyKey = Color.LimeGreen;
+			FormBorderStyle = FormBorderStyle.None;
+
 			// Make mascot draggable. 
 			ControlExtension.Draggable(Mascot, true);
-
-			// Set window to top layer.
+						
 			TopMost = true;
+			ShowInTaskbar = false;
 
+			// Load default mascot xml settings.
 			GetXmlSettings();
 		}
 
@@ -191,7 +193,8 @@ namespace Desktop_Mascot
 			Int32.TryParse(velocityStr.Substring(velocityStr.IndexOf(",") + 1), out moveForceY);
 
 			// Update mascot frame & remove semi-transparent pixels.
-			Mascot.Image = UnSemi(new Bitmap(imgPath));
+			Mascot.Image = new Bitmap(imgPath); //  UnSemi(new Bitmap(imgPath));
+			
 		}
 
 		private void GetXmlSettings()
@@ -217,36 +220,6 @@ namespace Desktop_Mascot
 			decelerationY = Int32.Parse(node.Attributes["deceleration"].Value);
 			decelerationRateY = Int32.Parse(node.Attributes["rateOfDeceleration"].Value);
 			maxVelocityY = Int32.Parse(node.Attributes["maxVelocity"].Value);
-		}
-
-
-		/// <summary>
-		/// Remove semi-transparent pixels.
-		/// </summary>
-		/// <param name="bmp"></param>
-		/// <returns>Edited bitmap image.</returns>
-		public Bitmap UnSemi(Bitmap bmp)
-		{
-			Size s = bmp.Size;
-			PixelFormat fmt = bmp.PixelFormat;
-			Rectangle rect = new Rectangle(Point.Empty, s);
-			BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadOnly, fmt);
-			int size1 = bmpData.Stride * bmpData.Height;
-			byte[] data = new byte[size1];
-			System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, data, 0, size1);
-			for (int y = 0; y < s.Height; y++)
-			{
-				for (int x = 0; x < s.Width; x++)
-				{
-					int index = y * bmpData.Stride + x * 4;
-					// alpha,  threshold = 255
-					data[index + 3] = (data[index + 3] < 255) ? (byte)0 : (byte)255;
-				}
-			}
-			System.Runtime.InteropServices.Marshal.Copy(data, 0, bmpData.Scan0, data.Length);
-			bmp.UnlockBits(bmpData);
-
-			return bmp;
-		}		
+		}	
 	}
 }

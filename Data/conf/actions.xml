@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Mascot>
     <Environment>
-        <Physics gravity="8">
+        <Physics gravity="9">
             <!-- Physics of mascot axis movement -->
             <xAxis deceleration="17" rateOfDeceleration="1" maxVelocity="50"/>
             <yAxis deceleration="16" rateOfDeceleration="3" maxVelocity="15"/>
@@ -11,13 +11,13 @@
         <!-- Idle -->
         <Action type="idle" description="stand" collider="ground">
             <Animation>
-                <Frame duration="100" velocity="4,7" image="/mascot1.png"/>
+                <Frame duration="100" velocity="4,7" image="/idle.gif"/>
             </Animation>
         </Action>
         <!-- Fall -->
         <Action type="fall" description="falling" collider="ground">
             <Animation>
-                <Frame duration="100" velocity="0,0" image="/mascot2.png"/>
+                <Frame duration="100" velocity="0,0" image="/falling.gif"/>
             </Animation>
         </Action>
 

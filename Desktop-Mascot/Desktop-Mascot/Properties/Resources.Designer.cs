@@ -63,9 +63,9 @@ namespace Desktop_Mascot.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap mascot1 {
+        internal static System.Drawing.Bitmap idle {
             get {
-                object obj = ResourceManager.GetObject("mascot1", resourceCulture);
+                object obj = ResourceManager.GetObject("idle", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
