@@ -14,7 +14,6 @@ namespace Desktop_Mascot
 {
 	public partial class Mascot : UserControl
 	{
-		List<string> imageNames;
 		private bool falling = true; // Try remove
 
 		// Mascot movement force.

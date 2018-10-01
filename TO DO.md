@@ -16,6 +16,8 @@
 * If cursor slowly hovered above it's head the mascot will attempt to grab it.
 * If grabbed it'll hold onto the cursor as if you were holding it.
 * If user drags the mascot too fast, it gets dizzy and vomits rainbows.
+* Sleeping/ sleep cycle when tired.
+* Dancing.
 * Allow mascot to climb and walk on windows.
 * Support for dual monitors.
 * Mascot moves to second monitor if fullscreen game running in the first.

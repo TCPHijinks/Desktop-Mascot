@@ -29,10 +29,16 @@
         private void InitializeComponent()
         {
 			this.components = new System.ComponentModel.Container();
-			this.mascotGraphic = new System.Windows.Forms.PictureBox();
 			this.Timer = new System.Windows.Forms.Timer(this.components);
+			this.mascotGraphic = new System.Windows.Forms.PictureBox();
 			((System.ComponentModel.ISupportInitialize)(this.mascotGraphic)).BeginInit();
 			this.SuspendLayout();
+			// 
+			// Timer
+			// 
+			this.Timer.Enabled = true;
+			this.Timer.Interval = 1;
+			this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
 			// 
 			// mascotGraphic
 			// 
@@ -47,12 +53,6 @@
 			this.mascotGraphic.TabStop = false;
 			this.mascotGraphic.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mascotGraphic_MouseDown);
 			this.mascotGraphic.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mascotGraphic_MouseUp);
-			// 
-			// Timer
-			// 
-			this.Timer.Enabled = true;
-			this.Timer.Interval = 1;
-			this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
 			// 
 			// Mascot
 			// 

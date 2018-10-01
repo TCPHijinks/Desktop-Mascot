@@ -16,19 +16,19 @@ namespace Desktop_Mascot
 	public partial class Form : System.Windows.Forms.Form
 	{
 		public Form()
-		{			
+		{
 			InitializeComponent();
 
 			// Set window transparent.
 			BackColor = Color.LimeGreen;
 			TransparencyKey = Color.LimeGreen;
 			FormBorderStyle = FormBorderStyle.None;
-						
+
 			TopMost = true;
 			ShowInTaskbar = false;
 
-			
-			Mascot mascot = new Mascot();			
+
+			Mascot mascot = new Mascot();
 			this.Controls.Add(mascot);
 		}
 	}
