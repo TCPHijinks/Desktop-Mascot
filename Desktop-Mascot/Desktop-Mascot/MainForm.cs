@@ -15,6 +15,7 @@ namespace Desktop_Mascot
 {
 	public partial class Form : System.Windows.Forms.Form
 	{
+
 		public Form()
 		{
 			InitializeComponent();
@@ -23,13 +24,15 @@ namespace Desktop_Mascot
 			BackColor = Color.LimeGreen;
 			TransparencyKey = Color.LimeGreen;
 			FormBorderStyle = FormBorderStyle.None;
-
+			DoubleBuffered = true;
 			TopMost = true;
 			ShowInTaskbar = false;
 
 
 			Mascot mascot = new Mascot();
 			this.Controls.Add(mascot);
+
+			
 		}
 	}
 }
