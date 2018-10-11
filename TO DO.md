@@ -23,5 +23,4 @@
 * Mascot moves to second monitor if fullscreen game running in the first.
 
 ## Bugs and Improvements:
-* Clean code.
-* Improve throwing mascot system.
+N/A
