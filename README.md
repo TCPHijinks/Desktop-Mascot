@@ -2,7 +2,7 @@
 Download a [Copy!](https://drive.google.com/file/d/1cXKQYsVBO4PC9n8OUMwwydB5Gn_ezYw2/view?usp=sharing)
 
 # What does it do?
-It's simple software that gives you a desktop buddy to play with and enjoy! Currently, the features are limited, however, in the future, it will keep you company and wonder about the desktop without interrupting your workflow. All this with the ability to easily edit how it interacts with you and easily replace its sprites.
+It's simple software that gives you a desktop buddy to play with and enjoy! Currently, the features are limited. However, in the future it'll keep you company as it wanders about the desktop without interrupting your workflow. All this with the ability to easily edit how it interacts and looks by allowing a user to easily replace sprites and edit settings.
 
 # Features
 - Ability to quickly edit mascot via XML file.
