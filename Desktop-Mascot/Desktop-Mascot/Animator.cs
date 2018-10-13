@@ -29,7 +29,7 @@ namespace Desktop_Mascot
 			{
 				oldAction = actionType;
 
-				// Get anim image.				
+				// Get animation frame image.				
 				string nodePath = "//Mascot[@name='"+mascotXml.MascotName+"']//Action[@type='"+actionType+"']//Frame";
 				imgFrame = mascotXml.GetSingleNode(nodePath, "image");
 			}

@@ -16,6 +16,7 @@ namespace Desktop_Mascot
 	{
 		Animator anim;
 		XmlMascotReader xmlReader;
+		Terrain terrain;
 
 		bool beingDragged = false;
 
@@ -45,6 +46,7 @@ namespace Desktop_Mascot
 			// Load mascot settings.
 			xmlReader = new XmlMascotReader("default");
 			anim = new Animator(xmlReader);
+			terrain = new Terrain(Screen.PrimaryScreen.WorkingArea.Width, Screen.PrimaryScreen.WorkingArea.Height + 30, mascotWidth, mascotHeight);
 
 			// Apply default physics settings.
 			gravity = xmlReader.MascotGravity;
@@ -67,19 +69,34 @@ namespace Desktop_Mascot
 			cursorCurPosX = Cursor.Position.X;
 			cursorCurPosY = Cursor.Position.Y;
 
+			// Get current position.
+			mascotPosX = mascotGraphic.Location.X;
+			mascotPosY = mascotGraphic.Location.Y;
+
 			TrackCursorThrowSpeed();
 
 			if(!beingDragged)
 			{
-				CheckInBoundary();
-				if (!OnGround())
+				// Check if in boundary and set position.
+				terrain.CheckBoundary(mascotPosX, mascotPosY);
+
+				if (!terrain.InBoundary)
+				{
+					mascotPosX = terrain.MascotX;
+					mascotPosY = terrain.MascotY;
+
+					StopForceMovement();
+					mascotGraphic.Location = new Point(terrain.MascotX, terrain.MascotY);
+				}
+				
+				if (!terrain.OnGround(mascotPosX,mascotPosY))
 				{
 					AppyForces();
 				}
 			}		
 			
 			// Temporary anim state manager. 
-			if(OnGround())
+			if(terrain.OnGround(mascotPosX,mascotPosY))
 			{
 				mascotGraphic.Image = anim.UpdateFrame("idle");
 			}
@@ -176,71 +193,11 @@ namespace Desktop_Mascot
 		}
 
 
-		#region Environment checks.
-		/// <summary>
-		/// Returns whether mascot is on platform.
-		/// </summary>
-		/// <returns></returns>
-		private bool OnGround()
-		{
-			// Check if on ground.
-			if((mascotPosY + mascotHeight) == Height)
-			{
-				return true;
-			}
-			return false;
-		}	
-		
-		/// <summary>
-		/// Moves mascot inside screen boundary if outside.
-		/// </summary>
-		private void CheckInBoundary()
-		{
-			bool insideBoundary = true;
-
-			// Set mascot current position.
-			mascotPosX = mascotGraphic.Location.X;
-			mascotPosY = mascotGraphic.Location.Y;
-			
-			if ((mascotPosX + mascotWidth) > Width)
-			{
-				mascotPosX = (Width - mascotWidth);				
-				insideBoundary = false;				
-			}
-			else if(mascotPosX < 0)
-			{				
-				mascotPosX = 0;				
-				insideBoundary = false;
-			}			
-			if((mascotPosY + mascotHeight) > Height)
-			{				
-				mascotPosY = (Height - mascotHeight);				
-				insideBoundary = false;				
-			}
-			else if(mascotPosY < 0)
-			{				
-				//scotPosY = 0;				
-				//sideBoundary = false;				
-			}
-						
-			if(!insideBoundary)
-			{
-				StopForceMovement();
-				mascotGraphic.Location = new Point(mascotPosX, mascotPosY);
-			}
-		}
-		#endregion
 
 		#region Physics and Force.
 		// Physics variables.
 		int gravity;						// Force of gravity on mascot.
 		int decelerationX, decelerationY;   // Force deceleration.
-
-		private void button1_Click(object sender, EventArgs e)
-		{
-			Application.Exit();
-		}
-
 		int maxForceX, maxForceY;			// Max amount of added force.
 		int mascotForceX, mascotForceY;		// Mascot physics forces.
 		int cursorSpeedX, cursorSpeedY;		// Speed of cursor movement.		
@@ -316,6 +273,11 @@ namespace Desktop_Mascot
 			
 			beingDragged = false;		// Set not being dragged by cursor.
 			calculateSpeedX = false;	// Stop calculating cursor speed.		
+		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			Application.Exit();
 		}
 		#endregion
 	}

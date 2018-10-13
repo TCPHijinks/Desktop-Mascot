@@ -74,7 +74,7 @@
 			this.Controls.Add(this.mascotGraphic);
 			this.Cursor = System.Windows.Forms.Cursors.AppStarting;
 			this.Name = "Mascot";
-			this.Size = new System.Drawing.Size(157, 157);
+			this.Size = new System.Drawing.Size(129, 129);
 			((System.ComponentModel.ISupportInitialize)(this.mascotGraphic)).EndInit();
 			this.ResumeLayout(false);
 
