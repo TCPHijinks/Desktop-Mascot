@@ -2,14 +2,21 @@
 [![N|Solid](https://i.imgur.com/58wQQGT.png)](https://twitter.com/Buldron)
 
 ## Future Updates:
+* Mascot can detect if taskbar is present.
 * Settings menu (right-click on mascot).
+* Ability to select refresh rate in settings.
+* Ability to select other mascot in settings.
 * Ability to easily add custom mascots.
 * Ability to have multiple mascots at once.
+* Mascot can wander around monitor.
+* Mascot animation state machine for movement and actions.
+* Carry animation for Mascot.
+* Thrown (in air) animation for mascot with velocity.
+* Clicking sleeping mascot will startle (or wake) it.
+* Double clicking mascot will knock it onto the ground.
+* Mascot makes sound and action if clicked.
 * Knock on monitor/special action if user inactive.
 * Mascot is startled if user opens a window when it's distracted.
-* Mascot does action and audio when clicked.
-* Clicking sleeping mascot will wake them.
-* Double-clicking sleeping mascot will startle them.
 * Allow mascot to hide in background layer (occasionally peak out) - get surprised if you move the window to reveal them.
 * Sweeping cursor past mascot head knocks it over if you've been playing with it.
 * Can get flustered/blush if cursor nearby for too long.
@@ -23,4 +30,4 @@
 * Mascot moves to second monitor if fullscreen game running in the first.
 
 ## Bugs and Improvements:
-N/A
+* Fix refresh-rate.
