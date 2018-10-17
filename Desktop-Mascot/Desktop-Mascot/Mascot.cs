@@ -16,7 +16,7 @@ namespace Desktop_Mascot
 	{
 		Animator anim;
 		XmlMascotReader xmlReader;
-		Terrain terrain;
+		MascotTerrainCollision terrain;
 
 		bool beingDragged = false;
 
@@ -32,8 +32,7 @@ namespace Desktop_Mascot
 		/// </summary>
 		public Mascot()
 		{
-			InitializeComponent();
-			DoubleBuffered = true;
+			InitializeComponent();		
 			Dock = DockStyle.Fill; // Set size equal to container
 			
 			// Make mascot draggable. 
@@ -46,7 +45,7 @@ namespace Desktop_Mascot
 			// Load mascot settings.
 			xmlReader = new XmlMascotReader("default");
 			anim = new Animator(xmlReader);
-			terrain = new Terrain(Screen.PrimaryScreen.WorkingArea.Width, Screen.PrimaryScreen.WorkingArea.Height + 30, mascotWidth, mascotHeight);
+			terrain = new MascotTerrainCollision(Screen.PrimaryScreen.WorkingArea.Width, Screen.PrimaryScreen.WorkingArea.Height + 30, mascotWidth, mascotHeight);
 
 			// Apply default physics settings.
 			gravity = xmlReader.MascotGravity;
@@ -54,7 +53,8 @@ namespace Desktop_Mascot
 			maxForceY = xmlReader.MascotMaxForceY;
 			decelerationX = xmlReader.MascotDecelerationX;
 			decelerationY = xmlReader.MascotDecelerationY;
-						
+					
+		 
 			//mascotGraphic.Region = anim.MakeNonTransparentRegion((Bitmap) mascotGraphic.Image);
 		}
 				
@@ -65,35 +65,35 @@ namespace Desktop_Mascot
 		/// <param name="e"></param>
 		private void Timer_Tick(object sender, EventArgs e)
 		{			
-			// Update cursor position and speed.
-			cursorCurPosX = Cursor.Position.X;
-			cursorCurPosY = Cursor.Position.Y;
-
 			// Get current position.
 			mascotPosX = mascotGraphic.Location.X;
 			mascotPosY = mascotGraphic.Location.Y;
-
-			TrackCursorThrowSpeed();
-
-			if(!beingDragged)
+			
+			if (beingDragged)
+			{
+				TrackCursorMovement();
+			}	
+			else
 			{
 				// Check if in boundary and set position.
 				terrain.CheckBoundary(mascotPosX, mascotPosY);
 
 				if (!terrain.InBoundary)
 				{
-					mascotPosX = terrain.MascotX;
-					mascotPosY = terrain.MascotY;
+					cursorSpeedX = 0;
+					cursorSpeedY = 0;
 
-					StopForceMovement();
-					mascotGraphic.Location = new Point(terrain.MascotX, terrain.MascotY);
+					mascotPosX = terrain.NewMascotX;
+					mascotPosY = terrain.NewMascotY;	
+
+					mascotGraphic.Location = new Point(terrain.NewMascotX, terrain.NewMascotY);
 				}
-				
-				if (!terrain.OnGround(mascotPosX,mascotPosY))
+
+				if (!terrain.OnGround(mascotPosX, mascotPosY))
 				{
 					AppyForces();
 				}
-			}		
+			}
 			
 			// Temporary anim state manager. 
 			if(terrain.OnGround(mascotPosX,mascotPosY))
@@ -105,94 +105,83 @@ namespace Desktop_Mascot
 				mascotGraphic.Image = anim.UpdateFrame("fall");
 			}
 		}
+		
 
-		// Cursor x and y-axis values.
-		bool calculateSpeedX = false, calculateSpeedY = false;	// If calculate speed again.
-		bool cursorMovingLeft = false, cursorMovingUp = false;  // If cursor moving left.
+		// Cursor movement tracking.
+		bool calculateNewSpeedX = true;
+		bool calculateNewSpeedY = true;
+		int cursorSpeedTimerX;
+		int cursorSpeedTimerY;
+		int initialCursorPosX;
+		int initialCursorPosY;
+		int lastCursorPosX;
+		int lastCursorPosY;
+		int curCursorPosX;
+		int curCursorPosY;
+		private void TrackCursorMovement()
+		{			
+			curCursorPosX = Cursor.Position.X;
+			curCursorPosY = Cursor.Position.Y;						
+			cursorSpeedTimerX++;
+			cursorSpeedTimerY++;
 
-		int timerX = 1, timerY = 1;				// X-axis move time (used to determine speed).
-		int cursorOldPosX, cursorOldPosY;		// Cursor last position (used to determine if moving).
-		int cursorStartPosX, cursorStartPosY;	// Cursor start position (used to determine distance).
-		int cursorCurPosX, cursorCurPosY;		// Cursor current position (used to determine distance)				   
-		private void TrackCursorThrowSpeed()
-		{
-			#region Calculate cursor x-axis speed.
-			// Start new calculation if not already and moving.
-			if (calculateSpeedX && cursorStartPosX != cursorCurPosX)
+			#region Cursor x-axis.
+			// Restart cursor movement tracking.
+			if (calculateNewSpeedX)
+			{				
+				calculateNewSpeedX = false;
+				initialCursorPosX = curCursorPosX;
+				lastCursorPosX = curCursorPosX - 1;
+				cursorSpeedTimerX = 1;				
+			}	
+			else
 			{
-				cursorMovingLeft = false;	// Whether mascot dragged left.
-				calculateSpeedX = false;	// Whether start new calculation of speed.
-				if (cursorCurPosX < cursorStartPosX)
+				// Check if moving in same direction and
+				// reset if change direction or stop.				
+				if (GetDistance(curCursorPosX, initialCursorPosX) > GetDistance(lastCursorPosX, initialCursorPosX))
 				{
-					cursorMovingLeft = true;
-				}
-				// Update old position to check if move.
-				cursorOldPosX = cursorStartPosX;	
-			}						
-			// Flip values of old and new cursor positions if go right,
-			//  allowing calculate of difference between the two values.
-			int smallerValueX = cursorCurPosX;		
-			int largerValueX = cursorOldPosX;
-			if (!cursorMovingLeft)			
-			{
-				smallerValueX = cursorOldPosX;
-				largerValueX = cursorCurPosX;
-			}
-			// If not new calculation and continuing. 
-			if (!calculateSpeedX)	
-			{
-				// Increase time, then update old cursor pos to current if still moving in one direction.
-				// Otherwise if not moving or change direction, reset calculations of speed.
-				timerX++;
-				if (smallerValueX < largerValueX)	// If still moving same dir, update last cursor pos.
-				{
-					cursorOldPosX = cursorCurPosX;
+					lastCursorPosX = curCursorPosX;
 				}
 				else
 				{
-					calculateSpeedX = true;
-					cursorStartPosX = cursorCurPosX;
-					timerX = 1;
+					calculateNewSpeedX = true;
 				}
 			}
 			#endregion
 
-			#region Calculate cursor y-axis speed.
-			if (calculateSpeedY && cursorStartPosY != cursorCurPosY)
+			#region Cursor y-axis.
+			if (calculateNewSpeedY)
 			{
-				cursorMovingUp = false;
-				calculateSpeedY = false;
-				if (cursorCurPosY < cursorStartPosY)
-				{
-					cursorMovingUp = true;
-				}
-				cursorOldPosY = cursorStartPosY;
+				calculateNewSpeedY = false;
+				initialCursorPosY = curCursorPosY;
+				lastCursorPosY = curCursorPosY - 1;
+				cursorSpeedTimerY = 1;				
 			}
-			int smallerValueY = cursorCurPosY;
-			int largerValueY = cursorOldPosY;
-			if (!cursorMovingUp)
+			else
 			{
-				smallerValueY = cursorOldPosY;
-				largerValueY = cursorCurPosY;
-			}
-			if (!calculateSpeedY)
-			{
-				timerY++;
-				if (smallerValueY < largerValueY)
+				if (GetDistance(curCursorPosY, initialCursorPosY) > GetDistance(lastCursorPosY, initialCursorPosY))
 				{
-					cursorOldPosY = cursorCurPosY;
+					lastCursorPosY = curCursorPosY;
 				}
 				else
 				{
-					calculateSpeedY = true;
-					cursorStartPosY = cursorCurPosY;
-					timerY = 1;
+					calculateNewSpeedY = true;
 				}
 			}
 			#endregion
 		}
 
+		int GetDistance(int Pos1, int Pos2)
+		{
+			return Math.Abs(Pos1 - Pos2);
+		}
 
+		private void CalculateCursorSpeed()
+		{			
+			cursorSpeedX = (curCursorPosX - initialCursorPosX) / cursorSpeedTimerX;
+			cursorSpeedY = (curCursorPosY - initialCursorPosY) / cursorSpeedTimerY;
+		}
+		
 
 		#region Physics and Force.
 		// Physics variables.
@@ -200,8 +189,9 @@ namespace Desktop_Mascot
 		int decelerationX, decelerationY;   // Force deceleration.
 		int maxForceX, maxForceY;			// Max amount of added force.
 		int mascotForceX, mascotForceY;		// Mascot physics forces.
-		int cursorSpeedX, cursorSpeedY;		// Speed of cursor movement.		
+		int cursorSpeedX, cursorSpeedY;     // Speed of cursor movement.		
 
+	
 		private void AppyForces()
 		{
 			// Reset force.
@@ -234,51 +224,23 @@ namespace Desktop_Mascot
 			// Update mascot position on screen.
 			mascotGraphic.Location = new Point(mascotPosX + mascotForceX, mascotPosY + mascotForceY);
 		}
-		
-		/// <summary>
-		/// Removes all external forces (except gravity) from Mascot.
-		/// </summary>
-		private void StopForceMovement()
-		{
-			mascotForceY = 0;
-			mascotForceX = 0;
-			cursorSpeedX = 0;
-			cursorSpeedY = 0;
-		}
 		#endregion
-
-		#region Mouse and Button Clicking.
-		/// <summary>
-		/// Mouse button (M1) was pressed on Mascot.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+				
+		
 		private void MascotGraphic_MouseDown(object sender, MouseEventArgs e)
 		{
-			cursorStartPosX = cursorCurPosX;
-			calculateSpeedX = true;
 			beingDragged = true;
-		}
+		}		
 		
-		/// <summary>
-		/// Mouse button (M1) was released on Mascot.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
 		private void MascotGraphic_MouseUp(object sender, MouseEventArgs e)
 		{
-			// Calculate cursor speed.
-			cursorSpeedX = (cursorCurPosX - cursorStartPosX) / timerX;
-			cursorSpeedY = (cursorCurPosY - cursorStartPosY) / timerY;
-			
-			beingDragged = false;		// Set not being dragged by cursor.
-			calculateSpeedX = false;	// Stop calculating cursor speed.		
+			beingDragged = false;
+			CalculateCursorSpeed();
 		}
 
-		private void button1_Click(object sender, EventArgs e)
+		private void Button1_Click(object sender, EventArgs e)
 		{
 			Application.Exit();
-		}
-		#endregion
+		}		
 	}
 }

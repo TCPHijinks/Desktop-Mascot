@@ -30,8 +30,8 @@
         {
 			this.components = new System.ComponentModel.Container();
 			this.Timer = new System.Windows.Forms.Timer(this.components);
-			this.mascotGraphic = new System.Windows.Forms.PictureBox();
 			this.button1 = new System.Windows.Forms.Button();
+			this.mascotGraphic = new System.Windows.Forms.PictureBox();
 			((System.ComponentModel.ISupportInitialize)(this.mascotGraphic)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -41,6 +41,20 @@
 			this.Timer.Interval = 1;
 			this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
 			// 
+			// button1
+			// 
+			this.button1.BackColor = System.Drawing.Color.White;
+			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.button1.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.button1.Location = new System.Drawing.Point(0, 0);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(85, 27);
+			this.button1.TabIndex = 2;
+			this.button1.Text = "Close Test";
+			this.button1.UseVisualStyleBackColor = false;
+			this.button1.Click += new System.EventHandler(this.Button1_Click);
+			// 
 			// mascotGraphic
 			// 
 			this.mascotGraphic.BackColor = System.Drawing.Color.LimeGreen;
@@ -49,21 +63,11 @@
 			this.mascotGraphic.Image = global::Desktop_Mascot.Properties.Resources.idle;
 			this.mascotGraphic.Location = new System.Drawing.Point(0, 0);
 			this.mascotGraphic.Name = "mascotGraphic";
-			this.mascotGraphic.Size = new System.Drawing.Size(128, 128);
+			this.mascotGraphic.Size = new System.Drawing.Size(129, 129);
 			this.mascotGraphic.TabIndex = 1;
 			this.mascotGraphic.TabStop = false;
 			this.mascotGraphic.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MascotGraphic_MouseDown);
 			this.mascotGraphic.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MascotGraphic_MouseUp);
-			// 
-			// button1
-			// 
-			this.button1.Location = new System.Drawing.Point(0, 0);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(75, 23);
-			this.button1.TabIndex = 2;
-			this.button1.Text = "Close Test";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// Mascot
 			// 

@@ -13,6 +13,7 @@ namespace Desktop_Mascot
 	{		
 		string imgFrame;
 		XmlMascotReader mascotXml;
+		Bitmap lastFrame;
 		public Animator(XmlMascotReader xmlReader)
 		{
 			mascotXml = xmlReader;
@@ -32,9 +33,12 @@ namespace Desktop_Mascot
 				// Get animation frame image.				
 				string nodePath = "//Mascot[@name='"+mascotXml.MascotName+"']//Action[@type='"+actionType+"']//Frame";
 				imgFrame = mascotXml.GetSingleNode(nodePath, "image");
+
+				lastFrame = new Bitmap(Path.Combine(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory), @"Data\img\Mascot" + imgFrame));
+				return lastFrame;
 			}
+			return lastFrame;
 			
-			return new Bitmap(Path.Combine(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory), @"Data\img\Mascot" + imgFrame));
 		}
 
 		/// <summary>

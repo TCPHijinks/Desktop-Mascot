@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Desktop_Mascot
 {
-	class Terrain
+	class MascotTerrainCollision
 	{
 		readonly int screenWidth;
 		readonly int screenHeight;
@@ -14,12 +14,12 @@ namespace Desktop_Mascot
 		readonly int mascotHeight;
 		readonly int mascotWidth;
 
-		public int MascotX { get; set; }
-		public int MascotY { get; set; }
+		public int NewMascotX { get; private set; }
+		public int NewMascotY { get; private set; }
 
 		public bool InBoundary { get; private set; }
 
-		public Terrain(int screenWidth, int screenHeight, int mascotWidth, int mascotHeight)
+		public MascotTerrainCollision(int screenWidth, int screenHeight, int mascotWidth, int mascotHeight)
 		{
 			this.screenWidth = screenWidth;
 			this.screenHeight = screenHeight;
@@ -38,34 +38,28 @@ namespace Desktop_Mascot
 		}
 
 		public void CheckBoundary(int mascotX, int mascotY)
-		{
-			//bool insideBoundary = true;
+		{		
 			InBoundary = true;
+
 			// Set mascot current position.
-			MascotX = mascotX;
-			MascotY = mascotY;
+			NewMascotX = mascotX;
+			NewMascotY = mascotY;
 
-			if ((MascotX + mascotWidth) > screenWidth)
+			if ((NewMascotX + mascotWidth) > screenWidth)
 			{
-				MascotX = (screenWidth - mascotWidth);
+				NewMascotX = (screenWidth - mascotWidth);
 				InBoundary = false;
 			}
-			else if (MascotX < 0)
+			else if (NewMascotX < 0)
 			{
-				MascotX = 0;
+				NewMascotX = 0;
 				InBoundary = false;
 			}
-			if ((MascotY + mascotHeight) > screenHeight)
+			if ((NewMascotY + mascotHeight) > screenHeight)
 			{
-				MascotY = (screenHeight - mascotHeight);
+				NewMascotY = (screenHeight - mascotHeight);
 				InBoundary = false;
 			}
-		}
-
-		public string showAllInfo()
-		{
-			//string i = "Mascot WxH: " + mascotWidth + "x" + mascotHeight + " -- Mascot XY: " + MascotX + "x" + MascotY + " -- Screen WxH: " + screenWidth + "x" + screenHeight;
-			return "g";
 		}
 	}
 }
