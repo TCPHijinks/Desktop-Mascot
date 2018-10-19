@@ -2,7 +2,6 @@
 [![N|Solid](https://i.imgur.com/58wQQGT.png)](https://twitter.com/Buldron)
 
 ## Future Updates:
-* Mascot can detect if taskbar is present.
 * Settings menu (right-click on mascot).
 * Ability to select refresh rate in settings.
 * Ability to select other mascot in settings.

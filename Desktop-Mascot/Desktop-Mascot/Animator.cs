@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml;
 
 namespace Desktop_Mascot
@@ -12,8 +13,7 @@ namespace Desktop_Mascot
 	class Animator
 	{		
 		string imgFrame;
-		XmlMascotReader mascotXml;
-		Bitmap lastFrame;
+		XmlMascotReader mascotXml;	
 		public Animator(XmlMascotReader xmlReader)
 		{
 			mascotXml = xmlReader;
@@ -24,7 +24,7 @@ namespace Desktop_Mascot
 		/// </summary>
 		/// <param name="actionName"></param>
 		string oldAction = null;
-		public Bitmap UpdateFrame(string actionType)
+		public void UpdateFrame(string actionType, ref PictureBox graphic)
 		{
 			if (actionType != oldAction || oldAction == null)
 			{
@@ -34,11 +34,9 @@ namespace Desktop_Mascot
 				string nodePath = "//Mascot[@name='"+mascotXml.MascotName+"']//Action[@type='"+actionType+"']//Frame";
 				imgFrame = mascotXml.GetSingleNode(nodePath, "image");
 
-				lastFrame = new Bitmap(Path.Combine(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory), @"Data\img\Mascot" + imgFrame));
-				return lastFrame;
+				graphic.Image = new Bitmap(Path.Combine(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory), @"Data\img\Mascot" + imgFrame));
+				//graphic.Region = MakeNonTransparentRegion((Bitmap)graphic.Image);
 			}
-			return lastFrame;
-			
 		}
 
 		/// <summary>

@@ -15,6 +15,7 @@ namespace Desktop_Mascot
 	public partial class Mascot : UserControl
 	{
 		Animator anim;
+		MascotPhysics physics;
 		XmlMascotReader xmlReader;
 		MascotTerrainCollision terrain;
 
@@ -44,18 +45,9 @@ namespace Desktop_Mascot
 			
 			// Load mascot settings.
 			xmlReader = new XmlMascotReader("default");
+			physics = new MascotPhysics(xmlReader);
 			anim = new Animator(xmlReader);
-			terrain = new MascotTerrainCollision(Screen.PrimaryScreen.WorkingArea.Width, Screen.PrimaryScreen.WorkingArea.Height + 30, mascotWidth, mascotHeight);
-
-			// Apply default physics settings.
-			gravity = xmlReader.MascotGravity;
-			maxForceX = xmlReader.MascotMaxForceX;
-			maxForceY = xmlReader.MascotMaxForceY;
-			decelerationX = xmlReader.MascotDecelerationX;
-			decelerationY = xmlReader.MascotDecelerationY;
-					
-		 
-			//mascotGraphic.Region = anim.MakeNonTransparentRegion((Bitmap) mascotGraphic.Image);
+			terrain = new MascotTerrainCollision(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height, mascotWidth, mascotHeight);
 		}
 				
 		/// <summary>
@@ -75,157 +67,85 @@ namespace Desktop_Mascot
 			}	
 			else
 			{
-				// Check if in boundary and set position.
-				terrain.CheckBoundary(mascotPosX, mascotPosY);
+				// Check if in boundary, update position if not.
+				terrain.KeepMascotInsideBoundary(ref mascotPosX, ref mascotPosY, Screen.PrimaryScreen.WorkingArea.Width, 
+					Screen.PrimaryScreen.WorkingArea.Height, ref mascotGraphic);
 
 				if (!terrain.InBoundary)
 				{
 					cursorSpeedX = 0;
-					cursorSpeedY = 0;
-
-					mascotPosX = terrain.NewMascotX;
-					mascotPosY = terrain.NewMascotY;	
-
-					mascotGraphic.Location = new Point(terrain.NewMascotX, terrain.NewMascotY);
+					cursorSpeedY = 0;					
 				}
 
-				if (!terrain.OnGround(mascotPosX, mascotPosY))
+				if (!terrain.OnGround)
 				{
-					AppyForces();
+					physics.AppyForces(ref mascotPosX, ref mascotPosY, ref cursorSpeedX, ref cursorSpeedY, ref mascotGraphic);
 				}
 			}
 			
 			// Temporary anim state manager. 
-			if(terrain.OnGround(mascotPosX,mascotPosY))
+			if(terrain.OnGround)
 			{
-				mascotGraphic.Image = anim.UpdateFrame("idle");
+				anim.UpdateFrame("idle", ref mascotGraphic);
 			}
 			else
 			{
-				mascotGraphic.Image = anim.UpdateFrame("fall");
+				anim.UpdateFrame("fall", ref mascotGraphic);
 			}
 		}
-		
+
+		    
+	   	
 
 		// Cursor movement tracking.
-		bool calculateNewSpeedX = true;
-		bool calculateNewSpeedY = true;
-		int cursorSpeedTimerX;
-		int cursorSpeedTimerY;
-		int initialCursorPosX;
-		int initialCursorPosY;
-		int lastCursorPosX;
-		int lastCursorPosY;
-		int curCursorPosX;
-		int curCursorPosY;
+		bool calculateNewSpeedX = true, calculateNewSpeedY = true;
+		int cursorSpeedTimerX,  cursorSpeedTimerY;
+		int initialCursorPosX, initialCursorPosY;
+		int lastCursorPosX,	lastCursorPosY;
+		int curCursorPosX, curCursorPosY;
 		private void TrackCursorMovement()
-		{			
+		{
 			curCursorPosX = Cursor.Position.X;
-			curCursorPosY = Cursor.Position.Y;						
+			curCursorPosY = Cursor.Position.Y;
 			cursorSpeedTimerX++;
 			cursorSpeedTimerY++;
-
-			#region Cursor x-axis.
-			// Restart cursor movement tracking.
-			if (calculateNewSpeedX)
-			{				
-				calculateNewSpeedX = false;
-				initialCursorPosX = curCursorPosX;
-				lastCursorPosX = curCursorPosX - 1;
-				cursorSpeedTimerX = 1;				
-			}	
-			else
-			{
-				// Check if moving in same direction and
-				// reset if change direction or stop.				
-				if (GetDistance(curCursorPosX, initialCursorPosX) > GetDistance(lastCursorPosX, initialCursorPosX))
-				{
-					lastCursorPosX = curCursorPosX;
-				}
-				else
-				{
-					calculateNewSpeedX = true;
-				}
-			}
-			#endregion
-
-			#region Cursor y-axis.
-			if (calculateNewSpeedY)
-			{
-				calculateNewSpeedY = false;
-				initialCursorPosY = curCursorPosY;
-				lastCursorPosY = curCursorPosY - 1;
-				cursorSpeedTimerY = 1;				
-			}
-			else
-			{
-				if (GetDistance(curCursorPosY, initialCursorPosY) > GetDistance(lastCursorPosY, initialCursorPosY))
-				{
-					lastCursorPosY = curCursorPosY;
-				}
-				else
-				{
-					calculateNewSpeedY = true;
-				}
-			}
-			#endregion
+			TrackCursorMovementExtension(ref calculateNewSpeedX, ref initialCursorPosX, ref lastCursorPosX, ref curCursorPosX, ref cursorSpeedTimerX);
+			TrackCursorMovementExtension(ref calculateNewSpeedY, ref initialCursorPosY, ref lastCursorPosY, ref curCursorPosY, ref cursorSpeedTimerY);
 		}
 
-		int GetDistance(int Pos1, int Pos2)
+		private void TrackCursorMovementExtension(ref bool calculateNewSpeed, ref int initialCursorPos, ref int lastCursorPos, ref int curCursorPos, ref int cursorSpeedTimer)
 		{
-			return Math.Abs(Pos1 - Pos2);
+			if (calculateNewSpeed)
+			{
+				calculateNewSpeed = false;
+				initialCursorPos = curCursorPos;
+				cursorSpeedTimer = 1;
+			}
+			else
+			{
+				if (curCursorPos != lastCursorPos)
+				{
+					lastCursorPos = curCursorPos;
+				}
+				else
+				{
+					calculateNewSpeed = true;
+				}
+			}
 		}
+				
 
+		int cursorSpeedX, cursorSpeedY;
 		private void CalculateCursorSpeed()
 		{			
 			cursorSpeedX = (curCursorPosX - initialCursorPosX) / cursorSpeedTimerX;
 			cursorSpeedY = (curCursorPosY - initialCursorPosY) / cursorSpeedTimerY;
 		}
-		
 
-		#region Physics and Force.
-		// Physics variables.
-		int gravity;						// Force of gravity on mascot.
-		int decelerationX, decelerationY;   // Force deceleration.
-		int maxForceX, maxForceY;			// Max amount of added force.
-		int mascotForceX, mascotForceY;		// Mascot physics forces.
-		int cursorSpeedX, cursorSpeedY;     // Speed of cursor movement.		
-
-	
-		private void AppyForces()
+		int GetDistance(int Pos1, int Pos2)
 		{
-			// Reset force.
-			mascotForceX = 0;
-			mascotForceY = 0;
-
-			// Calculate move forces.
-			cursorSpeedY += gravity;
-			mascotForceY = (cursorSpeedY / decelerationY);
-			mascotForceX = (cursorSpeedX / decelerationY);		
-
-			// Restrict max x-axis speed.
-			if (mascotForceX > maxForceX)
-			{
-				mascotForceX = maxForceX;
-			}
-			else if(mascotForceX < (maxForceX * -1))
-			{
-				mascotForceX = maxForceX * -1;
-			}
-			if (mascotForceY > maxForceY)
-			{
-				mascotForceY = maxForceY;
-			}
-			else if (mascotForceY < (maxForceY * -1))
-			{
-				mascotForceY = maxForceY * -1;
-			}		
-
-			// Update mascot position on screen.
-			mascotGraphic.Location = new Point(mascotPosX + mascotForceX, mascotPosY + mascotForceY);
-		}
-		#endregion
-				
+			return Math.Abs(Pos1 - Pos2);
+		}			
 		
 		private void MascotGraphic_MouseDown(object sender, MouseEventArgs e)
 		{

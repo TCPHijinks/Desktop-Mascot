@@ -9,17 +9,16 @@ namespace Desktop_Mascot
 {
 	class XmlMascotReader
 	{
-		public int MascotGravity { get; private set; }
+		public string MascotName { get; private set; }
 
+		public int MascotGravity { get; private set; }
 		public int MascotDecelerationX { get; private set; }
 		public int MascotDecelerationY { get; private set; }
-
 		public int MascotMaxForceX { get; private set; }
 		public int MascotMaxForceY { get; private set; }
 
-		public string MascotName { get; private set; }
-
 		XmlDocument actionsDoc;
+
 
 		/// <summary>
 		/// Loads all mascot physics settings.

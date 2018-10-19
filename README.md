@@ -1,5 +1,5 @@
 [![N|Solid](https://i.imgur.com/gSg0JVk.png)](https://twitter.com/Fotamon)
-Download a [Copy!](https://drive.google.com/file/d/1NY03WtRaaVGZnsvPYtuIy3pp_iFOIAbf/view?usp=sharing)
+Download a [Copy!](https://drive.google.com/open?id=1H4i4faRaddDAn0A1cghavjKI6olQILaR)
 
 # What does it do?
 It's simple software that gives you a desktop buddy to play with and enjoy! Currently, the features are limited. However, in the future it'll keep you company as it wanders about the desktop without interrupting your workflow. All this with the ability to easily edit how it interacts and looks by allowing a user to easily replace sprites and edit settings.
@@ -11,9 +11,11 @@ It's simple software that gives you a desktop buddy to play with and enjoy! Curr
 
 
 ### Latest update
-**1.2.1**
-- Significant Animator performance increase.
-- Refactoring of Mascot functions.
+**1.2.2**
+- Mascot now dynamically detects collision with the taskbar.
+- Animator preformance further improved.
+- New Physics class to handle movement calculations and environmental forces.
+- Further Mascot refactoring.
 
 # Next Planned Features.
 - Animator state system to handle sprite animations.
