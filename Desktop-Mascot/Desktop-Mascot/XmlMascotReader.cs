@@ -10,10 +10,10 @@ namespace Desktop_Mascot
 	class XmlMascotReader
 	{
 		public string MascotName { get; private set; }
+        public float MascotDecelerationX { get; private set; }
+        public float MascotDecelerationY { get; private set; }
 
-		public int MascotGravity { get; private set; }
-		public int MascotDecelerationX { get; private set; }
-		public int MascotDecelerationY { get; private set; }
+        public int MascotGravity { get; private set; }		
 		public int MascotMaxForceX { get; private set; }
 		public int MascotMaxForceY { get; private set; }
 
@@ -37,12 +37,12 @@ namespace Desktop_Mascot
 
 			// Load mascot x-axis physics settings. 
 			node = actionsDoc.DocumentElement.SelectSingleNode("//Mascot[@name='"+mascotName+"']//Physics/xAxis");			
-			MascotDecelerationX = Int32.Parse(node.Attributes["deceleration"].Value);
+			MascotDecelerationX = float.Parse(node.Attributes["deceleration"].Value);
 			MascotMaxForceX = Int32.Parse(node.Attributes["maxForce"].Value);
 
 			// Load mascot y-axis physics settings.
 			node = actionsDoc.DocumentElement.SelectSingleNode("//Mascot[@name='"+mascotName+"']//Physics/yAxis");
-			MascotDecelerationY = Int32.Parse(node.Attributes["deceleration"].Value);
+			MascotDecelerationY = float.Parse(node.Attributes["deceleration"].Value);
 			MascotMaxForceY = Int32.Parse(node.Attributes["maxForce"].Value);
 
 			MascotName = mascotName;

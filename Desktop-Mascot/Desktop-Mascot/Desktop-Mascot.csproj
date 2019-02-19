@@ -67,6 +67,7 @@
     <Compile Include="MascotMenu.Designer.cs">
       <DependentUpon>MascotMenu.cs</DependentUpon>
     </Compile>
+    <Compile Include="MascotMovementLogic.cs" />
     <Compile Include="MascotPhysics.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

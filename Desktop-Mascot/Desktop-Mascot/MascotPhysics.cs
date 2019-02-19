@@ -9,11 +9,11 @@ using System.Windows.Forms;
 namespace Desktop_Mascot
 {
 	class MascotPhysics
-	{
-		readonly int gravity;
-		readonly int decelerationX, decelerationY;
+	{      
+        readonly int gravity;		
 		readonly int maxForceX, maxForceY;
-		int mascotForceX, mascotForceY;
+		public int mascotForceX, mascotForceY;
+        public bool physicsEnabled = true;
 
 		public MascotPhysics(XmlMascotReader xmlReader)
 		{
@@ -21,42 +21,43 @@ namespace Desktop_Mascot
 			gravity = xmlReader.MascotGravity;
 			maxForceX = xmlReader.MascotMaxForceX;
 			maxForceY = xmlReader.MascotMaxForceY;
-			decelerationX = xmlReader.MascotDecelerationX;
-			decelerationY = xmlReader.MascotDecelerationY;
 		}
 		
 
 		public void AppyForces(ref int mascotPosX, ref int mascotPosY, ref int cursorSpeedX, ref int cursorSpeedY, ref PictureBox graphic)
 		{
-			
-			// Reset force.
-			mascotForceX = 0;
-			mascotForceY = 0;
+			if(physicsEnabled)
+            {
+                // Set move forces.
+                cursorSpeedY += gravity;
+                mascotForceY = cursorSpeedY;
+                mascotForceX = cursorSpeedX;
 
-			// Calculate move forces.
-			cursorSpeedY += gravity;
-			mascotForceY = (cursorSpeedY / decelerationY);
-			mascotForceX = (cursorSpeedX / decelerationX);
+                // Restrict max x-axis speed.
+                if (mascotForceX > maxForceX)
+                {
+                    mascotForceX = maxForceX;
+                }
+                else if (mascotForceX < (maxForceX * -1))
+                {
+                    mascotForceX = maxForceX * -1;
+                }
+                if (mascotForceY > maxForceY)
+                {
+                    mascotForceY = maxForceY;
+                }
+                else if (mascotForceY < (maxForceY * -1))
+                {
+                    mascotForceY = maxForceY * -1;
+                }
 
-			// Restrict max x-axis speed.
-			if (mascotForceX > maxForceX)
-			{
-				mascotForceX = maxForceX;
-			}
-			else if (mascotForceX < (maxForceX * -1))
-			{
-				mascotForceX = maxForceX * -1;
-			}
-			if (mascotForceY > maxForceY)
-			{
-				mascotForceY = maxForceY;
-			}
-			else if (mascotForceY < (maxForceY * -1))
-			{
-				mascotForceY = maxForceY * -1;
-			}
-
-			graphic.Location = graphic.Location = new Point(mascotPosX + mascotForceX, mascotPosY + mascotForceY);		
+                graphic.Location = new Point(mascotPosX + mascotForceX, mascotPosY + mascotForceY);
+            }				
 		}
+
+        public void MoveMascot(int moveSpeedX, int moveSpeedY, ref int mascotPosX, ref int mascotPosY, ref PictureBox graphic)
+        {
+            AppyForces(ref mascotPosX, ref mascotPosY, ref moveSpeedX, ref moveSpeedY, ref graphic);
+        }
 	}
 }

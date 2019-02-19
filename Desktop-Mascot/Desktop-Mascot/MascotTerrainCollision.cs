@@ -12,8 +12,8 @@ namespace Desktop_Mascot
 	{
 		int remainingScreenHeight;
 		int remainingScreenWidth;
-		readonly int screenMaxHeight;
-		readonly int screenMaxWidth;
+		public readonly int screenMaxHeight;
+		public readonly int screenMaxWidth;
 		readonly int mascotHeight;
 		readonly int mascotWidth;		
 		public bool InBoundary { get; private set; }
@@ -114,11 +114,6 @@ namespace Desktop_Mascot
 			graphic.Location = new Point(mascotX, mascotY);
 		}
 
-			  
-		//private void 
-
-		
-		
 		private enum TaskBarPos { TOP, BOTTOM, LEFT, RIGHT }
 		private bool CheckTaskbarPos(TaskBarPos checkIf)
 		{

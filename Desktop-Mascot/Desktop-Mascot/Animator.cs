@@ -12,32 +12,126 @@ namespace Desktop_Mascot
 {
 	class Animator
 	{		
-		string imgFrame;
-		XmlMascotReader mascotXml;	
+		XmlMascotReader mascotXml;      
 		public Animator(XmlMascotReader xmlReader)
 		{
-			mascotXml = xmlReader;
+			mascotXml = xmlReader;           
 		}
 
-		/// <summary>
-		/// Update mascot image frame.
-		/// </summary>
-		/// <param name="actionName"></param>
-		string oldAction = null;
-		public void UpdateFrame(string actionType, ref PictureBox graphic)
-		{
-			if (actionType != oldAction || oldAction == null)
-			{
-				oldAction = actionType;
+        string imgFrame;
+        string oldAction = null;
+        string actionType = null;
+        bool falling = false, hitGround = false;
+        int animTimer = 0;
+        public bool physicsEnabled = true, wanderingEnabled = true;
+        public void UpdateMascotAnim(bool onGround, bool beingDragged, int mascotForceX, int mascotForceY, 
+            int cursorSpeedX, int cursorSpeedY, ref PictureBox graphic)
+        {            
+            animTimer++;
+            if(physicsEnabled)
+            {
+                if (beingDragged)
+                {
+                    falling = false;
+                    /*
+                   if (cursorSpeedX == 0)
+                    {
+                        actionType = "carry";
+                    }
+                    else if (cursorSpeedX > 0)
+                    {
+                        actionType = "carryRight";
+                    }
+                    else
+                    {
+                        actionType = "carryLeft";
+                    }
+                    */
+                }
+                else
+                {
+                    if (onGround)
+                    {
+                        if (falling && !hitGround)
+                        {
+                            animTimer = 0;
+                            hitGround = true;
+                        }
+                        if (animTimer >= 40)
+                        {
+                            falling = false;
+                        }
+                        else
+                        {
+                            falling = true;
+                        }
 
-				// Get animation frame image.				
-				string nodePath = "//Mascot[@name='"+mascotXml.MascotName+"']//Action[@type='"+actionType+"']//Frame";
-				imgFrame = mascotXml.GetSingleNode(nodePath, "image");
+                        if (falling)
+                        {
+                            actionType = "hitGround";
+                        }
+                        else
+                        {
+                            if (mascotForceX > 0)
+                            {
+                                actionType = "walkRight";
+                            }
+                            else if (mascotForceX < 0)
+                            {
+                                actionType = "walkLeft";
+                            }
+                            else
+                            {
+                                actionType = "idle";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        falling = true;
+                        hitGround = false;
+                        if (mascotForceY < 0)
+                        {
+                            actionType = "idle";
+                        }
+                        else if (mascotForceX == 0)
+                        {
+                            actionType = "fallDown";
+                        }
+                        else if (mascotForceX > 0)
+                        {
+                            actionType = "fallRight";
+                        }
+                        else
+                        {
+                            actionType = "fallLeft";
+                        }
+                    }
 
-				graphic.Image = new Bitmap(Path.Combine(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory), @"Data\img\Mascot" + imgFrame));
-				//graphic.Region = MakeNonTransparentRegion((Bitmap)graphic.Image);
-			}
-		}
+                }
+            }
+            else
+            {
+                // Idle if no physics.
+                actionType = "idle";
+            }
+
+            // Update frame if needed.
+            if (actionType != oldAction || oldAction == null)
+            {
+                oldAction = actionType;
+
+                // Get animation frame image.				
+                string nodePath = "//Mascot[@name='" + mascotXml.MascotName + "']//Action[@type='" + actionType + "']//Frame";
+                imgFrame = mascotXml.GetSingleNode(nodePath, "image");
+
+                graphic.Image = new Bitmap(Path.Combine(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory), @"Data\img\Mascot" + imgFrame));
+                //graphic.Region = MakeNonTransparentRegion((Bitmap)graphic.Image);
+            }
+        }
+
+
+		
 
 		/// <summary>
 		/// Make a region representing the

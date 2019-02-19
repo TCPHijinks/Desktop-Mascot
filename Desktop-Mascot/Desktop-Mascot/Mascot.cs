@@ -18,9 +18,10 @@ namespace Desktop_Mascot
 		MascotPhysics physics;
 		XmlMascotReader xmlReader;
 		MascotTerrainCollision terrain;
+        MascotMovementLogic mascotLogic;
 
 		bool beingDragged = false;
-
+      
 		readonly int mascotHeight;
 		readonly int mascotWidth;		
 
@@ -48,13 +49,16 @@ namespace Desktop_Mascot
 			physics = new MascotPhysics(xmlReader);
 			anim = new Animator(xmlReader);
 			terrain = new MascotTerrainCollision(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height, mascotWidth, mascotHeight);
-		}
-				
-		/// <summary>
-		/// Mascot update timer
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+            mascotLogic = new MascotMovementLogic(physics, mascotWidth, Screen.PrimaryScreen.Bounds.Width, ref mascotGraphic);
+
+            this.mascotGraphic.ContextMenuStrip = this.mascotContextMenu;
+        }
+
+        /// <summary>
+        /// Mascot update timer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>       
 		private void Timer_Tick(object sender, EventArgs e)
 		{			
 			// Get current position.
@@ -82,17 +86,20 @@ namespace Desktop_Mascot
 					physics.AppyForces(ref mascotPosX, ref mascotPosY, ref cursorSpeedX, ref cursorSpeedY, ref mascotGraphic);
 				}
 			}
-			
-			// Temporary anim state manager. 
-			if(terrain.OnGround)
-			{
-				anim.UpdateFrame("idle", ref mascotGraphic);
-			}
-			else
-			{
-				anim.UpdateFrame("fall", ref mascotGraphic);
-			}
-		}
+
+            // Set whether physics enabled.
+            physics.physicsEnabled = toggleMascotPhysics;
+
+            // Update logic (AI).
+            mascotLogic.canWander = toggleMascotWandering;
+            mascotLogic.UpdateLogic(terrain.OnGround, ref mascotPosX, ref mascotPosY);
+
+            // Update animator.
+            anim.physicsEnabled = toggleMascotPhysics;
+            anim.wanderingEnabled = toggleMascotWandering;
+            anim.UpdateMascotAnim(terrain.OnGround, beingDragged, physics.mascotForceX, physics.mascotForceY, cursorSpeedX, cursorSpeedY, ref mascotGraphic);        
+        }
+           
 
 		    
 	   	
@@ -111,8 +118,9 @@ namespace Desktop_Mascot
 			cursorSpeedTimerY++;
 			TrackCursorMovementExtension(ref calculateNewSpeedX, ref initialCursorPosX, ref lastCursorPosX, ref curCursorPosX, ref cursorSpeedTimerX);
 			TrackCursorMovementExtension(ref calculateNewSpeedY, ref initialCursorPosY, ref lastCursorPosY, ref curCursorPosY, ref cursorSpeedTimerY);
-		}
-
+            CalculateCursorSpeed();
+        }
+        int t = 0;
 		private void TrackCursorMovementExtension(ref bool calculateNewSpeed, ref int initialCursorPos, ref int lastCursorPos, ref int curCursorPos, ref int cursorSpeedTimer)
 		{
 			if (calculateNewSpeed)
@@ -123,27 +131,36 @@ namespace Desktop_Mascot
 			}
 			else
 			{
-				if (curCursorPos != lastCursorPos)
+				if (GetDistance(curCursorPos, initialCursorPos) > GetDistance(lastCursorPos, initialCursorPos))
 				{
-					lastCursorPos = curCursorPos;
+                    lastCursorPos = curCursorPos;
 				}
 				else
 				{
-					calculateNewSpeed = true;
-				}
+					
+                    if (t > 2)
+                    {
+                        calculateNewSpeed = true;
+                        t = 0;
+                    }
+                    else
+                    {
+                        t++;
+                    }
+                }
 			}
 		}
-				
-
-		int cursorSpeedX, cursorSpeedY;
-		private void CalculateCursorSpeed()
-		{			
-			cursorSpeedX = (curCursorPosX - initialCursorPosX) / cursorSpeedTimerX;
-			cursorSpeedY = (curCursorPosY - initialCursorPosY) / cursorSpeedTimerY;
+               
+        int cursorSpeedX, cursorSpeedY;
+        private void CalculateCursorSpeed()
+		{		          
+			cursorSpeedX = (int)(((curCursorPosX - initialCursorPosX) / cursorSpeedTimerX) / xmlReader.MascotDecelerationX);
+			cursorSpeedY = (int)(((curCursorPosY - initialCursorPosY) / cursorSpeedTimerY) / xmlReader.MascotDecelerationY);
 		}
 
 		int GetDistance(int Pos1, int Pos2)
 		{
+            
 			return Math.Abs(Pos1 - Pos2);
 		}			
 		
@@ -158,9 +175,43 @@ namespace Desktop_Mascot
 			CalculateCursorSpeed();
 		}
 
-		private void Button1_Click(object sender, EventArgs e)
-		{
-			Application.Exit();
-		}		
-	}
+
+
+
+
+        bool toggleMascotWandering = true;
+        private void NoWonderingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (toggleMascotWandering)
+            {
+                toggleMascotWandering = false;
+                noWonderingToolStripMenuItem.Text = "Allow wandering";
+            }
+            else
+            {
+                toggleMascotWandering = true;
+                noWonderingToolStripMenuItem.Text = "Stop wandering";
+            }
+        }
+
+        bool toggleMascotPhysics = true;
+        private void disablePhysicsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (toggleMascotPhysics)
+            {
+                toggleMascotPhysics = false;
+                disablePhysicsToolStripMenuItem.Text = "Enable mascot physics";
+            }
+            else
+            {
+                toggleMascotPhysics = true;
+                disablePhysicsToolStripMenuItem.Text = "Disable mascot physics";
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+    }
 }
