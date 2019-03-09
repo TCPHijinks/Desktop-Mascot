@@ -1,5 +1,4 @@
 # List of Features to Add and Bugs to Fix.
-[![N|Solid](https://i.imgur.com/58wQQGT.png)](https://twitter.com/Buldron)
 
 ## Future Updates:
 * Ability to have multiple mascots at once.
