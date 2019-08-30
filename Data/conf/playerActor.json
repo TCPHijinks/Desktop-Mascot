@@ -1,0 +1,7 @@
+{
+    "Gravity": "3",
+    "Animations": 
+    {
+        "Walk":["actor1", "actor2", "actor3"]
+    }
+}
