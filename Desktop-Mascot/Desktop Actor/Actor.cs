@@ -17,14 +17,12 @@ namespace Desktop_Actor
     public partial class Actor : Form
     {
         private readonly Animator Animator;
-     
+        private EnvironmentHandler environment;
 
         public Actor()
         {
-            InitializeComponent();
-            
-            DoubleBuffered = true;
-            
+            InitializeComponent();            
+            DoubleBuffered = true;            
             Focus();
             BringToFront();
             TabStop = false;
@@ -41,22 +39,34 @@ namespace Desktop_Actor
             
         }
 
+        bool locked = false;
         protected override void OnPaint(PaintEventArgs eventArgs)
         {
             base.OnPaint(eventArgs);
+
             // Render actor.
             var gfx = eventArgs.Graphics;
             Animator.RenderActorFrame(gfx);
             gfx.ResetTransform();
 
-            Animator.Update();
-            Animator.UpdatePositions();
+            // Update movement position relative to fps.
+            Animator.UpdatePositions(Animator.CalculateFPS());
+          
 
-            
-            
-           // gfx.Clear(Color.Black);
-            
-         
+
+            if (!locked)
+            {
+                environment = new EnvironmentHandler(Animator.gameObject.Dimension.Height, Animator.gameObject.Dimension.Width, Width, Height, gfx);
+                locked = true;
+            }
+
+            environment.InsideTerrain(Animator.gameObject.Position.X, Animator.gameObject.Position.Y);
+
+
+
+            // gfx.Clear(Color.Black);
+
+
             Invalidate(); // Force control to be redrawn.
         }
 

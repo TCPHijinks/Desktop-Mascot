@@ -23,7 +23,7 @@ namespace Desktop_Actor
 
         }
 
-        public bool PointInside(Point point)
+        public bool Inside(Point point)
         {
             return _boundary.Contains((point));
         }

@@ -22,24 +22,24 @@ namespace Desktop_Actor
         /// Returns point of left side at actor center height.
         /// </summary>
         /// <returns></returns>
-        public Point GetLeftSide()
+        public Point GetTopLeft()
         {
-            return new Point(Position.X, Position.Y + Dimension.Height / 2);
+            return new Point(Position.X, Position.Y);
         }
 
-        public Point GetRightSide()
+        public Point GetTopRight()
         {
-            return new Point(Position.X + Dimension.Width, Position.Y + Dimension.Height / 2);
+            return new Point(Position.X + Dimension.Width, Position.Y);
         }
 
-        public Point GetTop()
+        public Point GetBottomLeft()
         {
-            return new Point(Position.X + Dimension.Width / 2, Position.Y);
+            return new Point(Position.X, Position.Y + Dimension.Height);
         }
 
-        public Point GetBottom()
+        public Point GetBottomRight()
         {
-            return new Point(Position.X + Dimension.Width / 2, Position.Y + Dimension.Height);
+            return new Point(Position.X + Dimension.Width, Position.Y + Dimension.Height);
         }
 
 
