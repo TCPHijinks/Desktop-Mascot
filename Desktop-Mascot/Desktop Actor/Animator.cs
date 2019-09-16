@@ -8,17 +8,13 @@ namespace Desktop_Actor
 {
     public class Animator
     {
-        public readonly GameObject gameObject = new GameObject();
+        GameObject gameObject;
         
-        public Animator(Control animControl)
+        public Animator(GameObject gameObject)
         {
-            // Subscribe to key press events.
-            animControl.MouseDown += MouseClick;
-            animControl.MouseUp += MouseUp;
+            this.gameObject = gameObject;
 
-            // Starting position.
-            gameObject.Dimension.Width = animControl.Width / 3;
-            gameObject.Dimension.Height = animControl.Height / 3;
+           
         }
 
 
@@ -45,7 +41,7 @@ namespace Desktop_Actor
             var speed = 200; // X units within 1 second
             var moveDistPerSecond = (int)(speed * framesPerSecond);
 
-            if (_grabbingGameObject)
+            if (gameObject.CursorDragging)
                 CursorDragActor();
             else
                 Physics(moveDistPerSecond);
@@ -53,28 +49,12 @@ namespace Desktop_Actor
 
 
 
-        #region Event Methods
-
-        private bool _grabbingGameObject;
-
-        private void MouseClick(object sender, MouseEventArgs e)
-        {
-            _grabbingGameObject = true;
-            Console.WriteLine("CALL");
-        }
-
-        private void MouseUp(object sender, MouseEventArgs e)
-        {
-            _grabbingGameObject = false;
-            Console.WriteLine("RELEASE");
-        }
-
-        #endregion Event Methods
+        
 
 
 
         private void CursorDragActor()
-        {          
+        {
             // Position actor so centered with cursor.
             gameObject.Position.X = (int)(Cursor.Position.X - (gameObject.Dimension.Width / 2));
             gameObject.Position.Y = (int)(Cursor.Position.Y - (gameObject.Dimension.Height / 2));

@@ -16,7 +16,7 @@ namespace Desktop_Actor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Actor());
+            Application.Run(new MainForm());
         }
     }
 

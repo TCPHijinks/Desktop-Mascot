@@ -8,22 +8,20 @@ using System.Windows.Forms;
 
 namespace Desktop_Actor
 {
-    public class EnvironmentHandler
+    public static class EnvironmentHandler
     {
-        private int objectHeight, objectWidth;
-        private List<Boundary> environment;
-        public EnvironmentHandler(int gameObjectHeight, int gameObjectWidth, int screenHeight, int screenWidth, Graphics gfx)
+        public static int screenHeight = 1080;
+        public static int screenWidth = 2080;
+        public static List<Rectangle> environment { private set; get; }
+
+        static EnvironmentHandler()
         {
-            objectHeight = gameObjectHeight;
-            objectWidth = gameObjectWidth;
-            environment = new List<Boundary>();
-
-            AddBoundary(new Boundary(0,-5, screenWidth, 5));// Screen Top
-            AddBoundary(new Boundary(0, screenHeight, screenWidth, 5));// Screen Bottom.
-            AddBoundary(new Boundary(-5, 0, 5, screenHeight));// Screen Left.
-            AddBoundary(new Boundary(screenWidth, 0, 5, screenHeight));// Screen Right.
+            AddBoundary(new Rectangle(0,-5, screenWidth, 5));// Screen Top
+            AddBoundary(new Rectangle(0, screenHeight, screenWidth, 5));// Screen Bottom.
+            AddBoundary(new Rectangle(-5, 0, 5, screenHeight));// Screen Left.
+            AddBoundary(new Rectangle(screenWidth, 0, 5, screenHeight));// Screen Right.
         }
-
+        /*
         public void InsideTerrain(int posX, int posY)
         {
             var cornerPoints = new List<Point>();
@@ -40,10 +38,21 @@ namespace Desktop_Actor
             }
          //   return true;
         }
-
-        public void AddBoundary(Boundary newBoundary)
+        */
+        public static void AddBoundary(Rectangle newBoundary)
         {
             environment.Add(newBoundary);
         }
+
+        public static bool Inside(Point point)
+        {
+            foreach(Rectangle boundary in environment)
+            {
+                if (boundary.Contains(point))
+                    return true;
+            }
+            return false;
+        }
+        
     }
 }

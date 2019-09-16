@@ -1,6 +1,6 @@
 namespace Desktop_Actor
 {
-    partial class Actor
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.

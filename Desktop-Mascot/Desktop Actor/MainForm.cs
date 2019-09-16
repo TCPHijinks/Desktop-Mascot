@@ -14,12 +14,13 @@ using System.Windows.Forms;
 
 namespace Desktop_Actor
 {
-    public partial class Actor : Form
+    public partial class MainForm : Form
     {
+        private GameObject actor;
         private readonly Animator Animator;
-        private EnvironmentHandler environment;
+    
 
-        public Actor()
+        public MainForm()
         {
             InitializeComponent();            
             DoubleBuffered = true;            
@@ -35,11 +36,15 @@ namespace Desktop_Actor
             ShowInTaskbar = false;
             WindowState = FormWindowState.Maximized;
             FormBorderStyle = FormBorderStyle.None;
-            Animator = new Animator(this);
-            
+
+            // Player char and animator component.
+            actor = new GameObject(this);
+            Animator = new Animator(actor);
+
+         
         }
 
-        bool locked = false;
+     
         protected override void OnPaint(PaintEventArgs eventArgs)
         {
             base.OnPaint(eventArgs);
@@ -54,13 +59,9 @@ namespace Desktop_Actor
           
 
 
-            if (!locked)
-            {
-                environment = new EnvironmentHandler(Animator.gameObject.Dimension.Height, Animator.gameObject.Dimension.Width, Width, Height, gfx);
-                locked = true;
-            }
+          
 
-            environment.InsideTerrain(Animator.gameObject.Position.X, Animator.gameObject.Position.Y);
+            //environment.InsideTerrain(Animator.gameObject.Position.X, Animator.gameObject.Position.Y);
 
 
 
