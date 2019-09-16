@@ -23,9 +23,9 @@ namespace Desktop_Actor
         public DateTime FrameTime;
         public double CalculateFPS()
         {
-            // Default starting prev.
-            if (PrevFrameTime == FrameTime)
-                PrevFrameTime = DateTime.Now;
+            // Default starting prev to earlier time for fps.
+            if (PrevFrameTime == FrameTime)            
+                PrevFrameTime = DateTime.Now.AddMilliseconds(-2);
             else
                 PrevFrameTime = FrameTime;
 
@@ -38,13 +38,15 @@ namespace Desktop_Actor
         public void UpdatePositions(double framesPerSecond)
         {
             // Ensure that the motion is moving at a
-            var speed = 200; // X units within 1 second
+            var speed = 400; // X units within 1 second
             var moveDistPerSecond = (int)(speed * framesPerSecond);
 
             if (gameObject.CursorDragging)
                 CursorDragActor();
             else
                 Physics(moveDistPerSecond);
+
+            gameObject.Inside();
         }
 
 
