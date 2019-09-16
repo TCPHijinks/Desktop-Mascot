@@ -2,20 +2,26 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace Desktop_Actor
 {
     public class Animator
     {
         GameObject gameObject;
-        
+        Animations anims;
+
         public Animator(GameObject gameObject)
         {
             this.gameObject = gameObject;
-            ArraySetup();
 
-
+            // Save anim json data and deserialize an Animation class.
+            string jsonData = File.ReadAllText(@Directory.GetCurrentDirectory() + "\\Data\\Anims.json");
+            anims = JsonConvert.DeserializeObject<Animations>(jsonData);
+            
+            ArraySetup(); // Setup arrays for overflow handling.
         }
 
 
@@ -24,6 +30,7 @@ namespace Desktop_Actor
         public DateTime FrameTime;
         public double CalculateFPS()
         {
+            
             // Default starting prev to earlier time for fps.
             if (PrevFrameTime == FrameTime)            
                 PrevFrameTime = DateTime.Now.AddMilliseconds(-2);
@@ -34,10 +41,10 @@ namespace Desktop_Actor
             return (FrameTime - PrevFrameTime).TotalMilliseconds / 1000;           
         }
 
-        Point velocity;
-        int n = 0, d = 4;
-        Point[] prevPos = new Point[5];
-        Point[] curPosDif = new Point[5];
+        Point velocity;     // Calculate velocity based on average distance per sec.
+        int n = 0, d = 4;   // Array overflows at length 5, d is n-1.
+        Point[] prevPos = new Point[5];     // Save previous positions to get distance moved.
+        Point[] curPosDif = new Point[5];   // Save distances between previous positions.
         private void ArraySetup()
         {
             for(int i = 0; i < 5; i++)
@@ -51,6 +58,7 @@ namespace Desktop_Actor
 
         public void UpdatePositions(double framesPerSecond)
         {
+
             // Ensure that the motion is moving at a
             var speed = 1200; // X units within 1 second
             var moveDistPerSecond = (int)(speed * framesPerSecond);
@@ -76,11 +84,11 @@ namespace Desktop_Actor
             // Then move gameobject based on that to simulate velocity/physics.
             velocity = SumAvg(curPosDif);
             PhysicsMovement(moveDistPerSecond);
-
+           // Console.WriteLine("L"+anims.Carry_left);
             // --- DEBUG ---
-            if(d == 4)
+            if (d == 4)
             {
-                Console.WriteLine("X::{0}, Y::{1}",velocity.X, velocity.Y);
+               // Console.WriteLine("X::{0}, Y::{1}",velocity.X, velocity.Y);
             }          
         }
 
@@ -182,11 +190,15 @@ namespace Desktop_Actor
         }
 
 
+       
+
+
 
         // Render target image.
         public void RenderActorFrame(Graphics gfx)
         {
-            var img = FromFileImage("C:\\Users\\CautiousDev\\Pictures\\Game Dev\\Sprites\\Red Cloak\\actor1.gif");
+            
+            var img = FromFileImage("C:\\Users\\CautiousDev\\Pictures\\Game Dev\\Sprites\\Red Cloak\\use\\idle.gif");
             gameObject.Dimension.Width = img.Width;
             gameObject.Dimension.Height = img.Height;
             
@@ -195,6 +207,13 @@ namespace Desktop_Actor
             gfx.DrawImage(img, gameObject.Position.X, gameObject.Position.Y);
         }
 
+        // Return current animation state name based on gameobject.
+    
+
+        void PlayAnimation(int frameLength)
+        {
+
+        }
 
 
         // Return target image.
