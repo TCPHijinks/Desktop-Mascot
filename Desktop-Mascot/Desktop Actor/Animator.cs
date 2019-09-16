@@ -13,8 +13,9 @@ namespace Desktop_Actor
         public Animator(GameObject gameObject)
         {
             this.gameObject = gameObject;
+            ArraySetup();
 
-           
+
         }
 
 
@@ -33,40 +34,125 @@ namespace Desktop_Actor
             return (FrameTime - PrevFrameTime).TotalMilliseconds / 1000;           
         }
 
+        Point velocity;
+        int n = 0, d = 4;
+        Point[] prevPos = new Point[5];
+        Point[] curPosDif = new Point[5];
+        private void ArraySetup()
+        {
+            for(int i = 0; i < 5; i++)
+            {
+                prevPos[i] = gameObject.Position;
+                curPosDif[i].X = 0;
+                curPosDif[i].Y = 0;
+            }
+        }
 
 
         public void UpdatePositions(double framesPerSecond)
         {
             // Ensure that the motion is moving at a
-            var speed = 400; // X units within 1 second
+            var speed = 1200; // X units within 1 second
             var moveDistPerSecond = (int)(speed * framesPerSecond);
 
+            // Follow cursor or apply gravity.
             if (gameObject.CursorDragging)
                 CursorDragActor();
             else
-                Physics(moveDistPerSecond);
+                Gravity(moveDistPerSecond);
 
-            gameObject.Inside();
+            gameObject.Inside(); // Keep gameobject inside boundaries.
+                            
+            // Update cur Point and calculate dist moved from last pos.
+            prevPos[n] = gameObject.Position;
+            curPosDif[n].X = prevPos[n].X - prevPos[d].X;
+            curPosDif[n].Y = prevPos[n].Y - prevPos[d].Y;
+            
+            // Increment so that curPos overflows at array end.
+            n = OverflowInt(n);
+            d = OverflowInt(d);
+
+            // Calculate avg of total differences between movement in array.
+            // Then move gameobject based on that to simulate velocity/physics.
+            velocity = SumAvg(curPosDif);
+            PhysicsMovement(moveDistPerSecond);
+
+            // --- DEBUG ---
+            if(d == 4)
+            {
+                Console.WriteLine("X::{0}, Y::{1}",velocity.X, velocity.Y);
+            }          
         }
 
 
 
-        
-
-
-
+        /// <summary>
+        /// Set gameobject position to be centered with cursor.
+        /// </summary>
         private void CursorDragActor()
-        {
-            // Position actor so centered with cursor.
+        {           
             gameObject.Position.X = (int)(Cursor.Position.X - (gameObject.Dimension.Width / 2));
             gameObject.Position.Y = (int)(Cursor.Position.Y - (gameObject.Dimension.Height / 2));
         }
 
-        
 
-        public void Physics(int moveDistPerSecond)
+
+        /// <summary>
+        /// Apply gravitational force and logic.
+        /// </summary>
+        /// <param name="moveDistPerSecond">Allowed fall distance per second.</param>
+        public void Gravity(int moveDistPerSecond)
         {
-            gameObject.Position.Y += moveDistPerSecond; // Gravity.
+            gameObject.Position.Y += moveDistPerSecond; 
+        }
+
+
+
+        /// <summary>
+        /// Return incremented integar with overflow.
+        /// </summary>
+        /// <param name="i">Integar value to increment or overflow.</param>
+        /// <returns></returns>
+        int OverflowInt(int i)
+        {
+            i++;
+            if (i < 0)
+                return prevPos.Length - 1;
+            if (i > prevPos.Length - 1)
+               return 0;
+            return i;
+        }
+
+
+
+        /// <summary>
+        /// Returns fake velocity based on averaged distance moved per update.
+        /// </summary>
+        /// <param name="points">Array of distances to average.</param>
+        /// <returns></returns>
+        Point SumAvg(Point[] points)
+        {
+            Point sumAvg = new Point(0,0);
+            for(int i = 0; i < points.Length - 1; i++)
+            {
+                sumAvg.X += points[i].X;
+                sumAvg.Y += points[i].Y;
+            }
+            sumAvg.X /= points.Length;
+            sumAvg.Y /= points.Length;
+
+            return sumAvg;
+        }
+
+
+        /// <summary>
+        /// Apply physics forces on gameobject.
+        /// </summary>
+        /// <param name="moveDistPerSec">Allowed movement distance per second.</param>
+        public void PhysicsMovement(int moveDistPerSec)
+        {
+            gameObject.Position.X += velocity.X;
+            gameObject.Position.Y += velocity.Y;
         }
 
 
