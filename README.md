@@ -1,31 +1,27 @@
-[![N|Solid](https://i.imgur.com/gSg0JVk.png)](https://twitter.com/Fotamon)
-Download a [Copy!](https://drive.google.com/open?id=1qr9RHEOyFNurRKdVWhnXEVV48nIXOclO)
+[![N|Solid](https://i.imgur.com/gSg0JVk.png)](https://twitter.com/PhylacteryLost)
+Download a [Copy!](https://drive.google.com/file/d/1stbRDoB61rE4aZOtHHAfgqlGMKq-H48q/view?usp=sharing)
 
 # What does it do?
-It's simple software that gives you a desktop buddy to play with and enjoy! Currently, the features are limited. However, in the future it'll keep you company as it wanders about the desktop without interrupting your workflow. All this with the ability to easily edit how it interacts and looks by allowing a user to easily replace sprites and edit settings.
+It's simple software that gives you a desktop buddy to play with and enjoy! Upon completion it will also include sound effects. All of which in addition to the animations will be easily customizable.
 
 # Features
-- Ability to quickly edit mascot via XML file.
-- Ability to change mascots appearance by replacing sprites.
-- Ability to throw around mascot.
+- Actor character with physics to throw around.
+- Easily replace actor with custom one.
+- Basic animation state machine.
 
 
 ### Latest update
-**1.3.0**
-- Added animation class functionality, including frame state machine.
-- Added mascot movement logic to allow the mascot to wander around.
+**2.0**
+- Finished complete rewrite.
+- Basic animation state machine.
 - Added context menu to allow exiting and enabling/disabling some features.
-- Improved code readability. 
-- General bug fixes.
+- Modified physics to lessen deceleration and consequently increase slide.
+
 
 # Next Planned Features.
-- Fix mascot throwing physics.
-- Support for dual monitors.
-- Support for multiple mascots.
-- Allow mascot to hide in background layer 
+- Fix boundaries so actor can't be gliched outside of the play area.
+- Improve animation state machine to accept animations with multiple frames.
+- Sound effects! Ability to easily edit via a json file.
 
-You can see a [Full List Here.](https://github.com/Buldron/Desktop-Mascot/blob/master/TO%20DO.md)
  
- 
- 
-**NOTE:** All art is placeholder. An artist will be commissioned once the project is further developed. 
+**NOTE:** All art is placeholder. I've also changed the project scope to be smaller but still allowing another developer to easily expand on what I've done so far. 

@@ -42,12 +42,12 @@ namespace Desktop_Actor
         }
 
         Point velocity;     // Calculate velocity based on average distance per sec.
-        int n = 0, d = 4;   // Array overflows at length 5, d is n-1.
-        Point[] prevPos = new Point[5];     // Save previous positions to get distance moved.
-        Point[] curPosDif = new Point[5];   // Save distances between previous positions.
+        int n = 0, d = 6;   // Array overflows at length 5, d is n-1.
+        Point[] prevPos = new Point[7];     // Save previous positions to get distance moved.
+        Point[] curPosDif = new Point[7];   // Save distances between previous positions.
         private void ArraySetup()
         {
-            for(int i = 0; i < 5; i++)
+            for(int i = 0; i < prevPos.Length; i++)
             {
                 prevPos[i] = gameObject.Position;
                 curPosDif[i].X = 0;
@@ -83,13 +83,7 @@ namespace Desktop_Actor
             // Calculate avg of total differences between movement in array.
             // Then move gameobject based on that to simulate velocity/physics.
             velocity = SumAvg(curPosDif);
-            PhysicsMovement(moveDistPerSecond);
-           // Console.WriteLine("L"+anims.Carry_left);
-            // --- DEBUG ---
-            if (d == 4)
-            {
-               // Console.WriteLine("X::{0}, Y::{1}",velocity.X, velocity.Y);
-            }          
+            PhysicsMovement(moveDistPerSecond);                  
         }
 
 
@@ -153,6 +147,7 @@ namespace Desktop_Actor
         }
 
 
+
         /// <summary>
         /// Apply physics forces on gameobject.
         /// </summary>
@@ -197,23 +192,49 @@ namespace Desktop_Actor
         // Render target image.
         public void RenderActorFrame(Graphics gfx)
         {
-            
-            var img = FromFileImage("C:\\Users\\CautiousDev\\Pictures\\Game Dev\\Sprites\\Red Cloak\\use\\idle.gif");
+            string path = Directory.GetCurrentDirectory() + "\\Data\\Frames\\"+ GetAnimState();
+            var img = FromFileImage(path);
             gameObject.Dimension.Width = img.Width;
             gameObject.Dimension.Height = img.Height;
             
             gfx.SmoothingMode = SmoothingMode.AntiAlias;
             gfx.CompositingQuality = CompositingQuality.HighQuality;
+
+
             gfx.DrawImage(img, gameObject.Position.X, gameObject.Position.Y);
         }
 
-        // Return current animation state name based on gameobject.
-    
+       
 
-        void PlayAnimation(int frameLength)
-        {
+     
 
+        string GetAnimState()
+        {        
+            string[] animFrames = anims.Idle;
+            Point velocity = SumAvg(curPosDif);
+
+            if (velocity.Y < 0) // UP
+            {
+                animFrames = anims.Idle;
+            }
+            else if (velocity.Y > 0) // Down.
+            {
+                animFrames = anims.Air_vertical;
+            }
+
+            if (velocity.X < 0) // Left.
+            {
+                animFrames = anims.Carry_left;
+            }
+            else if (velocity.X > 0) // Right.
+            {
+                animFrames = anims.Carry_right;
+            }
+
+            return animFrames[0];
         }
+
+      
 
 
         // Return target image.
