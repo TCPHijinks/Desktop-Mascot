@@ -18,36 +18,31 @@ namespace Desktop_Actor
     {
         private GameObject actor;
         private readonly Animator Animator;
-        public List<Rectangle> Environment;
+        private Rectangle gameObjectPlayArea;
 
         public MainForm()
         {
-            InitializeComponent();            
-            DoubleBuffered = true;            
+            InitializeComponent();
+            DoubleBuffered = true;
             Focus();
             BringToFront();
             TabStop = false;
             TopMost = true;
             KeyPreview = true;  // Prioritize parent key press over child.
             BackColor = Color.LimeGreen;
-            TransparencyKey = Color.LimeGreen;           
+            TransparencyKey = Color.LimeGreen;
             ShowInTaskbar = false;
             WindowState = FormWindowState.Maximized;
             FormBorderStyle = FormBorderStyle.None;
 
             // Default boundary.
-            Environment = new List<Rectangle>();
-            AddBoundary(new Rectangle(0, -100, Screen.FromControl(this).Bounds.Width, 100));// Screen Top
-            AddBoundary(new Rectangle(0, Screen.FromControl(this).Bounds.Height, Screen.FromControl(this).Bounds.Width, 100));// Screen Bottom.
-            AddBoundary(new Rectangle(-100, 0, 100, Screen.FromControl(this).Bounds.Height));// Screen Left.
-            AddBoundary(new Rectangle(Screen.FromControl(this).Bounds.Width, 0, 100, Screen.FromControl(this).Bounds.Height));// Screen Right.
+            gameObjectPlayArea = new Rectangle(0, 0, Screen.FromControl(this).Bounds.Width, Screen.FromControl(this).Bounds.Height);
 
             // Player char and animator component.
-            actor = new GameObject(this, Environment);
+            actor = new GameObject(this, gameObjectPlayArea);
             Animator = new Animator(actor);
         }
 
-     
         protected override void OnPaint(PaintEventArgs eventArgs)
         {
             base.OnPaint(eventArgs);
@@ -59,21 +54,8 @@ namespace Desktop_Actor
 
             // Update movement position relative to fps.
             Animator.UpdatePositions(Animator.CalculateFPS());
-                       
+
             Invalidate(); // Force control to be redrawn.
         }
-
-
-        public void AddBoundary(Rectangle newBoundary)
-        {
-            Environment.Add(newBoundary);
-          
-        }
-
-   
-
     }
-
-
-
 }
