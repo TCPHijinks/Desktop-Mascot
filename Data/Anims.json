@@ -1,0 +1,23 @@
+{
+    "FrameLength": 1.1,
+    "Idle": [
+      "idle_1.gif"
+    ],
+    "Carry_left": [
+      "carry_left.gif"
+    ],
+    "Carry_right": [
+      "carry_right.gif"
+    ],
+    "Air_vertical": [
+      "air_vertical.gif"
+    ],
+    "Air_horizontal": [
+      "air_horizontal.gif"
+    ],
+    "Walk_left": [
+      "walk_0.gif",
+      "walk_1.gif",
+      "walk_2.gif"
+    ]
+  }
