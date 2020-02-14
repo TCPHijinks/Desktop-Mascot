@@ -1,8 +1,12 @@
 [![N|Solid](https://i.imgur.com/gSg0JVk.png)](https://twitter.com/PhylacteryLost)
-Download a [Copy!](https://drive.google.com/file/d/1stbRDoB61rE4aZOtHHAfgqlGMKq-H48q/view?usp=sharing)
+Download a [Copy!](https://drive.google.com/open?id=1dmeJtw2hUEC9tUNvFVBSc-A5Df4_tUV7)
 
 # What does it do?
 It's simple software that gives you a desktop buddy to play with and enjoy! Upon completion it will also include sound effects. All of which in addition to the animations will be easily customizable.
+
+# Visual Studio Build Errors.
+This mascot requires that you place the "Data" folder/directory inside of the built application folder. So for a normal Debug build, take the "Data" folder from the main folder and place it into: 
+Desktop-Mascot > Desktop-Actor Code > Desktop Actor > bin > Debug (PLACE OT HERE)
 
 # Features
 - Actor character with physics to throw around.
